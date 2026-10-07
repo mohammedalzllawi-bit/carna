@@ -22,9 +22,17 @@ test('each Railpack service builds and starts its own workspace', () => {
     const config = readJson(file);
     assert.equal(config.provider, 'node');
     assert.equal(config.packages.node, '24');
-    assert.deepEqual(config.steps.install.commands, ['MONGOMS_DISABLE_POSTINSTALL=1 npm ci --include=dev']);
     assert.deepEqual(config.steps.build.commands, [build]);
     assert.equal(config.deploy.startCommand, start);
+  }
+});
+
+test('Railpack keeps provider manifest copies before installing dependencies', () => {
+  for (const file of ['railpack.json', 'deploy/railpack.web.json', 'deploy/railpack.admin.json']) {
+    const install = readJson(file).steps.install;
+    assert.equal(install.commands, undefined, `${file} must not replace provider copy commands`);
+    assert.equal(install.inputs, undefined, `${file} must keep provider input layers`);
+    assert.equal(install.variables.MONGOMS_DISABLE_POSTINSTALL, '1');
   }
 });
 

@@ -41,11 +41,13 @@ git push -u origin main
 
 اختر Railpack للبناء. الملفات أعلاه تحدد Node 24 وأوامر كل خدمة، وتثبت أدوات البناء دون تنزيل MongoDB المحلي للاختبارات عبر `MONGOMS_DISABLE_POSTINSTALL=1`. أزل أي Custom Install/Build/Start Command أو متغير `RAILPACK_INSTALL_CMD` / `RAILPACK_BUILD_CMD` / `RAILPACK_START_CMD` قديم لا يطابق هذه الإعدادات. لا يشغل `npm start` الويب أو الإدارة مع API داخل حاوية واحدة. لا ينشر Railway تطبيق Flutter؛ يبنى ويوزع منفصلاً.
 
+خطوة `install` تضيف متغير تعطيل تنزيل MongoDB فقط، ولا تستبدل `commands` أو `inputs` الافتراضية. يتضمن أمر التثبيت الافتراضي إعداد Corepack ونسخ ملفات `package.json` وملف القفل وبيانات workspaces إلى الصورة قبل تثبيت الاعتماديات؛ استبداله بقائمة تحتوي `npm ci` وحده يزيل أوامر النسخ ويفشل بناء الصورة. يجب التحقق من هذه الأوامر داخل خطة Railpack المولدة، وليس من نجاح `prepare` فقط.
+
 في Variables لخدمة API، أدخل القيم الحقيقية من `apps/api/.env.production.example`، ومنها `NODE_ENV=production` و`AUCTION_WORKER_MODE=redis` وMongoDB Replica Set وRedis ومفاتيح JWT والتخزين. ملف `.env` الموجود على جهازك **لا ينتقل إلى Railway**. لا تضع `DATABASE_URL` أو مفاتيح الدفع وCloudinary وResala في خدمة Web/Admin؛ تحتاج واجهتا الويب والإدارة إلى قيم API الخاصة بهما فقط. لا تضع مسار Windows المحلي لملف Firebase في الاستضافة؛ وفّر ملف اعتماد يمكن للخادم الوصول إليه وأضف مساره الصحيح.
 
 ولّد نطاق HTTPS لكل خدمة. اضبط `API_URL` في Web/Admin إلى نطاق API، و`NEXT_PUBLIC_API_URL` في Web إلى النطاق نفسه قبل البناء. اضبط `CORS_ORIGINS` في API إلى نطاقي Web/Admin الفعليين، مفصولين بفاصلة. تستخدم الخدمات `PORT` الذي تضبطه الاستضافة؛ عند تحديد منفذ يدوياً استخدم `8080` مثلاً وليس المنفذ المحلي المحجوز `3000`.
 
-بعد حفظ Variables وإعدادات الخدمات، اختر Redeploy لأحدث commit على `main`. هذه الملفات تعالج اكتشاف البناء والتشغيل؛ نجاح النشر الفعلي ما زال يتطلب متغيرات إنتاج صحيحة وخدمات البيانات والتخزين. لا تنفذ `seed:demo` أو أوامر حذف البيانات أثناء النشر.
+بعد حفظ Variables وإعدادات الخدمات، افتح Command Palette عبر `Ctrl+K` على Windows أو `Cmd+K` على macOS، واختر **Deploy Latest Commit** من الفرع المتصل `main`. تحقق من SHA في تفاصيل النشر: زر Redeploy في نشر قديم يعيد بناء نفس النسخة القديمة ولا يختار آخر تعديل تلقائياً. هذه الملفات تعالج اكتشاف البناء والتشغيل؛ نجاح النشر الفعلي ما زال يتطلب متغيرات إنتاج صحيحة وخدمات البيانات والتخزين. لا تنفذ `seed:demo` أو أوامر حذف البيانات أثناء النشر.
 
 المراجع الرسمية: [إعداد ملفات Railpack](https://railpack.com/config/file)، [نشر monorepo على Railway](https://docs.railway.com/deployments/monorepo).
 

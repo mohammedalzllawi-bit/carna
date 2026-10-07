@@ -7,7 +7,9 @@
   "buildAptPackages": ["...", "openssl"],
   "steps": {
     "install": {
-      "commands": ["MONGOMS_DISABLE_POSTINSTALL=1 npm ci --include=dev"]
+      "variables": {
+        "MONGOMS_DISABLE_POSTINSTALL": "1"
+      }
     },
     "build": {
       "commands": ["npm run api:build"]
