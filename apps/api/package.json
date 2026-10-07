@@ -9,6 +9,8 @@
     "dev": "node --env-file=../../.env --require ./scripts/configure-dns.cjs ../../node_modules/@nestjs/cli/bin/nest.js start",
     "dev:watch": "node --env-file=../../.env --require ./scripts/configure-dns.cjs ../../node_modules/@nestjs/cli/bin/nest.js start --watch",
     "build": "nest build",
+    "verify:runtime": "node scripts/verify-runtime.cjs",
+    "prestart": "npm run verify:runtime",
     "start": "node --env-file-if-exists=../../.env --require ./scripts/configure-dns.cjs dist/main.js",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "npm run build && node --test \"test/**/*.test.cjs\"",

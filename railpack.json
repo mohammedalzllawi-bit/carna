@@ -7,6 +7,7 @@
   "buildAptPackages": ["...", "openssl"],
   "steps": {
     "install": {
+      "deployOutputs": [],
       "variables": {
         "MONGOMS_DISABLE_POSTINSTALL": "1"
       }

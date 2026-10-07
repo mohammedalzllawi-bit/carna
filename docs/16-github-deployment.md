@@ -41,7 +41,9 @@ git push -u origin main
 
 اختر Railpack للبناء. الملفات أعلاه تحدد Node 24 وأوامر كل خدمة، وتثبت أدوات البناء دون تنزيل MongoDB المحلي للاختبارات عبر `MONGOMS_DISABLE_POSTINSTALL=1`. أزل أي Custom Install/Build/Start Command أو متغير `RAILPACK_INSTALL_CMD` / `RAILPACK_BUILD_CMD` / `RAILPACK_START_CMD` قديم لا يطابق هذه الإعدادات. لا يشغل `npm start` الويب أو الإدارة مع API داخل حاوية واحدة. لا ينشر Railway تطبيق Flutter؛ يبنى ويوزع منفصلاً.
 
-خطوة `install` تضيف متغير تعطيل تنزيل MongoDB فقط، ولا تستبدل `commands` أو `inputs` الافتراضية. يتضمن أمر التثبيت الافتراضي إعداد Corepack ونسخ ملفات `package.json` وملف القفل وبيانات workspaces إلى الصورة قبل تثبيت الاعتماديات؛ استبداله بقائمة تحتوي `npm ci` وحده يزيل أوامر النسخ ويفشل بناء الصورة. يجب التحقق من هذه الأوامر داخل خطة Railpack المولدة، وليس من نجاح `prepare` فقط.
+خطوة `install` تضبط متغير تعطيل تنزيل MongoDB، ولا تستبدل `commands` أو `inputs` الافتراضية. يتضمن أمر التثبيت الافتراضي إعداد Corepack ونسخ ملفات `package.json` وملف القفل وبيانات workspaces إلى الصورة قبل تثبيت الاعتماديات؛ استبداله بقائمة تحتوي `npm ci` وحده يزيل أوامر النسخ ويفشل بناء الصورة. يجب التحقق من هذه الأوامر داخل خطة Railpack المولدة، وليس من نجاح `prepare` فقط.
+
+في خدمة API، تضبط خطوة `install` الحقل `deployOutputs: []` لمنع Railpack من إضافة نسخة التثبيت القديمة مباشرة إلى صورة التشغيل. يأتي `node_modules` من خطوة `build` الافتراضية؛ إضافة طبقة `install` بعدها تعيد ملفات Prisma المؤقتة فوق العميل المولّد، ويظهر خطأ `IsEnum` / `Cannot convert undefined or null to object` عند تحميل DTOs. تظل خطوة التثبيت مطلوبة كمدخل للبناء. يشغّل `api:build` فحص `verify-runtime.cjs` بعد توليد Prisma وتجميع Nest، ويعيد `prestart` الفحص داخل صورة التشغيل. لا يتصل هذا الفحص بقاعدة البيانات ولا يعيد توليد العميل عند التشغيل.
 
 في Variables لخدمة API، أدخل القيم الحقيقية من `apps/api/.env.production.example`، ومنها `NODE_ENV=production` و`AUCTION_WORKER_MODE=redis` وMongoDB Replica Set وRedis ومفاتيح JWT والتخزين. ملف `.env` الموجود على جهازك **لا ينتقل إلى Railway**. لا تضع `DATABASE_URL` أو مفاتيح الدفع وCloudinary وResala في خدمة Web/Admin؛ تحتاج واجهتا الويب والإدارة إلى قيم API الخاصة بهما فقط. لا تضع مسار Windows المحلي لملف Firebase في الاستضافة؛ وفّر ملف اعتماد يمكن للخادم الوصول إليه وأضف مساره الصحيح.
 
@@ -59,8 +61,7 @@ git push -u origin main
 
 ```sh
 npm ci
-npm run prisma:generate --workspace @libya-auctions/api
-npm run build --workspace @libya-auctions/api
+npm run api:build
 ```
 
 التشغيل:
