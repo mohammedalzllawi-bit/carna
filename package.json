@@ -1,0 +1,44 @@
+{
+  "name": "libya-car-auctions-platform",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "npm@11.13.0",
+  "description": "Libyan car auctions marketplace monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "admin:bootstrap": "npm run admin:bootstrap --workspace @libya-auctions/api",
+    "seed:demo": "npm run seed:demo --workspace @libya-auctions/api",
+    "db:upgrade": "npm run db:upgrade --workspace @libya-auctions/api",
+    "test:integration": "npm run test:integration --workspace @libya-auctions/api",
+    "db:dev": "npm run db:dev --workspace @libya-auctions/api",
+    "db:status": "npm run db:status --workspace @libya-auctions/api",
+    "db:push": "npm run prisma:push --workspace @libya-auctions/api",
+    "api:dev": "npm run dev --workspace @libya-auctions/api",
+    "web:dev": "npm run dev --workspace @libya-auctions/web",
+    "admin:dev": "npm run dev --workspace @libya-auctions/admin",
+    "api:start": "npm run start --workspace @libya-auctions/api",
+    "web:start": "npm run start --workspace @libya-auctions/web",
+    "admin:start": "npm run start --workspace @libya-auctions/admin",
+    "test:runtime": "node --test test/*.test.cjs",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,prisma}\""
+  },
+  "dependencies": {
+    "@nestjs/platform-socket.io": "^12.1.0",
+    "@nestjs/websockets": "^12.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "turbo": "^2.0.14",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.9"
+  }
+}

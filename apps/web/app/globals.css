@@ -1,0 +1,421 @@
+:root {
+  --ink: #10233f;
+  --muted: #65758b;
+  --line: #d9e2ee;
+  --paper: #ffffff;
+  --canvas: #f4f7fb;
+  --green: #1769d2;
+  --green-dark: #0d4fa8;
+  --red: #d64545;
+  --yellow: #f4b740;
+  --charcoal: #0b2347;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--canvas);
+  font-family: Tahoma, Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+button, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; }
+
+.site-shell { min-height: 100vh; overflow: hidden; }
+.hero { position: relative; min-height: 680px; color: #fff; background: #53686e; }
+.hero-image { object-fit: cover; object-position: center 56%; z-index: 0; }
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(14, 23, 25, .12) 0%, rgba(14, 23, 25, .3) 45%, rgba(14, 23, 25, .79) 100%);
+}
+
+.site-header {
+  position: relative;
+  z-index: 4;
+  height: 78px;
+  max-width: 1240px;
+  margin: auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  border-bottom: 1px solid rgba(255,255,255,.23);
+}
+
+.brand { display: inline-flex; align-items: center; gap: 10px; font-size: 21px; font-weight: 700; white-space: nowrap; }
+.brand b { color: #7ee0bb; }
+.brand-mark { width: 42px; height: 42px; display: grid; place-items: center; background: var(--green); border-radius: 5px; }
+.main-nav { display: flex; align-items: center; gap: 29px; flex: 1; font-size: 14px; font-weight: 700; }
+.main-nav a { color: rgba(255,255,255,.86); transition: color .2s; }
+.main-nav a:hover { color: #fff; }
+.header-actions { display: flex; align-items: center; gap: 9px; }
+.icon-button, .menu-button {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 5px;
+  color: #fff;
+  background: rgba(12,22,24,.28);
+}
+.notification-dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; background: var(--yellow); border: 1px solid #fff; border-radius: 50%; }
+.account-button { height: 42px; display: flex; align-items: center; gap: 7px; border: 1px solid rgba(255,255,255,.3); border-radius: 5px; color: #fff; background: rgba(12,22,24,.28); padding: 0 14px; }
+.menu-button { display: none; }
+
+.hero-content { position: relative; z-index: 2; max-width: 1240px; margin: 0 auto; padding: 91px 28px 170px; }
+.hero-content > * { max-width: 530px; }
+.live-label { width: max-content; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding: 7px 10px; border: 1px solid rgba(255,255,255,.28); border-radius: 4px; background: rgba(10,25,25,.5); font-size: 13px; font-weight: 700; }
+.live-label span { width: 8px; height: 8px; background: #ff6565; border-radius: 50%; box-shadow: 0 0 0 4px rgba(255,101,101,.2); }
+.hero h1 { margin: 0; font-size: 50px; line-height: 1.22; letter-spacing: 0; }
+.hero-content p { margin: 15px 0 25px; color: rgba(255,255,255,.88); font-size: 19px; line-height: 1.8; }
+.hero-link { display: inline-flex; align-items: center; gap: 9px; color: #fff; font-weight: 700; border-bottom: 2px solid #6cd4ad; padding-bottom: 6px; }
+
+.search-panel {
+  position: relative;
+  z-index: 3;
+  margin: 0 auto 32px;
+  width: min(1184px, calc(100% - 56px));
+  min-height: 118px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 1.15fr;
+  gap: 1px;
+  padding: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 14px 40px rgba(18, 35, 38, .18);
+}
+.search-panel label { min-width: 0; padding: 5px 12px; border-left: 1px solid var(--line); }
+.search-panel label > span:first-child { display: block; margin-bottom: 7px; color: var(--muted); font-size: 12px; font-weight: 700; }
+.select-wrap { position: relative; display: block; }
+.select-wrap select, .select-wrap input { width: 100%; height: 39px; appearance: none; color: var(--ink); background: transparent; border: 0; outline: 0; font-size: 14px; font-weight: 700; padding-left: 24px; }
+.select-wrap input::placeholder { color: var(--ink); opacity: 1; }
+.input-wrap svg { display: none; }
+.select-wrap svg { position: absolute; left: 2px; top: 11px; color: #829094; pointer-events: none; }
+.search-button { align-self: center; height: 54px; display: flex; justify-content: center; align-items: center; gap: 9px; border: 0; border-radius: 5px; color: #fff; background: var(--green); font-weight: 700; transition: background .2s; }
+.search-button:hover { background: var(--green-dark); }
+.search-status { position: absolute; bottom: 1px; right: 29px; margin: 0; color: var(--green); font-size: 11px; }
+
+.auction-band { padding: 32px 28px 28px; color: #fff; background: var(--charcoal); }
+.auction-inner { max-width: 1184px; min-height: 115px; margin: auto; display: grid; grid-template-columns: 1.35fr 1.4fr .9fr .8fr auto; align-items: center; gap: 28px; }
+.auction-title { display: flex; gap: 12px; align-items: center; }
+.auction-icon { width: 48px; height: 48px; display: grid; place-items: center; color: #fff; background: var(--red); border-radius: 5px; }
+.auction-title small { color: #8fd9c0; font-weight: 700; }
+.auction-title h2 { margin: 4px 0 0; font-size: 18px; }
+.auction-metric { padding-right: 24px; border-right: 1px solid rgba(255,255,255,.14); }
+.auction-metric span { display: block; margin-bottom: 8px; color: #9eb0b4; font-size: 12px; }
+.auction-metric strong { font-size: 15px; }
+.auction-metric .price { color: #82dbbb; font-size: 21px; }
+.auction-metric .price small { font-size: 12px; }
+.countdown strong { direction: ltr; display: inline-block; font-variant-numeric: tabular-nums; color: #fff; font-size: 20px; }
+.bid-button { height: 48px; display: flex; align-items: center; gap: 8px; padding: 0 20px; border: 0; border-radius: 5px; color: #fff; background: var(--red); font-weight: 700; }
+.bid-button:disabled { cursor: not-allowed; color: #c5cecf; background: #425357; }
+
+.vehicles-section { max-width: 1240px; margin: auto; padding: 68px 28px; }
+.section-heading { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
+.section-kicker { color: var(--green); font-size: 13px; font-weight: 700; }
+.section-heading h2 { margin: 5px 0 0; font-size: 29px; }
+.section-heading a { display: flex; align-items: center; gap: 7px; color: var(--green); font-size: 14px; font-weight: 700; }
+.vehicle-filters { display: flex; gap: 12px; margin-bottom: 18px; }
+.vehicle-filters label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
+.vehicle-filters select { max-width: 160px; min-height: 38px; padding: 0 8px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink); }
+.vehicle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.public-empty { grid-column: 1 / -1; min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #758481; background: #fff; border: 1px dashed #cbd6d3; border-radius: 6px; }
+.public-empty h3 { margin: 12px 0 5px; color: var(--ink); font-size: 18px; }
+.public-empty p { margin: 0; font-size: 12px; }
+.vehicle-card { min-width: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; transition: transform .2s, box-shadow .2s; }
+.vehicle-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(28,49,52,.09); }
+.vehicle-media { position: relative; height: 245px; overflow: hidden; background: #d7dddd; }
+.vehicle-media img { object-fit: cover; }
+.vehicle-placeholder { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--muted); background: #e7edf5; }
+.vehicle-kind { position: absolute; right: 13px; bottom: 13px; max-width: calc(100% - 26px); overflow: hidden; padding: 6px 9px; color: #fff; background: rgba(13,29,31,.8); border-radius: 4px; font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.favorite { position: absolute; top: 12px; left: 12px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; color: #46575a; background: rgba(255,255,255,.93); }
+.favorite.active { color: var(--red); }
+.vehicle-body { min-width: 0; flex: 1; display: flex; flex-direction: column; padding: 17px; }
+.verified-row { display: flex; align-items: center; gap: 5px; color: var(--green); font-size: 11px; font-weight: 700; }
+.vehicle-card h3 { margin: 8px 0 14px; font-size: 18px; }
+.vehicle-card h3 a { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.vehicle-published { display: flex; align-items: center; gap: 5px; min-width: 0; margin: -6px 0 12px; color: var(--muted); font-size: 11px; }
+.vehicle-published svg { flex: 0 0 auto; }
+.vehicle-published span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vehicle-facts { display: flex; flex-wrap: wrap; gap: 15px; padding-bottom: 15px; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--line); }
+.vehicle-facts span { min-width: 0; display: flex; align-items: center; gap: 5px; }
+.vehicle-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 14px; }
+.vehicle-bottom small { display: block; margin-bottom: 3px; color: var(--muted); font-size: 11px; }
+.vehicle-bottom strong { color: var(--green-dark); font-size: 21px; }
+.vehicle-bottom strong span { font-size: 11px; }
+.vehicle-time { display: flex; align-items: center; gap: 5px; color: #6d7e82; font-size: 11px; }
+
+.service-band { max-width: 1184px; margin: 0 auto 68px; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; border: 1px solid #cfd9d8; border-radius: 6px; background: #fff; }
+.service-item { min-height: 165px; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 16px; padding: 28px; }
+.service-item + .service-item { border-right: 1px solid var(--line); }
+.service-icon { width: 50px; height: 50px; display: grid; place-items: center; color: var(--green); background: #e7f5f0; border-radius: 5px; }
+.service-item h2 { margin: 0 0 7px; font-size: 20px; }
+.service-item p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.service-item button, .service-link { grid-column: 2; justify-self: start; display: flex; align-items: center; gap: 7px; margin-top: 14px; padding: 0; border: 0; color: var(--green); background: transparent; font-size: 13px; font-weight: 700; }
+.protection .service-icon { color: #ad7920; background: #fff3d8; }
+.protection button { color: #9a6710; }
+
+footer { min-height: 145px; display: flex; align-items: center; justify-content: space-between; gap: 25px; padding: 30px max(28px, calc((100% - 1184px) / 2)); color: #b8c4c6; background: #101b1e; font-size: 12px; }
+.footer-brand { color: #fff; }
+footer p { margin: 0; }
+
+.detail-page, .chat-page { max-width: 1184px; min-height: 100vh; margin: auto; padding: 30px 24px 64px; }
+.detail-back, .chat-page > a { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-weight: 700; }
+.detail-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); gap: 30px; margin-top: 24px; }
+.detail-photo { position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; background: #e7edf5; }
+.detail-photo img { object-fit: contain; }
+.detail-thumbs { display: flex; gap: 8px; overflow-x: auto; margin-top: 9px; }
+.detail-thumbs button { position: relative; flex: 0 0 80px; height: 62px; border: 2px solid transparent; padding: 0; }
+.detail-thumbs button.active { border-color: var(--green); }
+.detail-thumbs img { object-fit: cover; }
+.detail-info h1 { margin: 10px 0 18px; font-size: 30px; }
+.detail-category { color: var(--green); font-weight: 700; }
+.detail-price { display: block; padding-bottom: 20px; border-bottom: 1px solid var(--line); color: var(--green-dark); font-size: 26px; }
+.detail-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 10px; margin-top: 20px; }
+.detail-facts span { display: flex; align-items: center; gap: 7px; }
+.detail-published { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 7px; color: var(--muted); }
+.detail-published time { color: var(--ink); font-weight: 700; }
+.detail-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.detail-actions a, .detail-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; padding: 0 18px; border: 1px solid var(--green); border-radius: 5px; color: var(--green); background: #fff; font-weight: 700; }
+.detail-actions button { color: #fff; background: var(--green); }
+.detail-error { color: #b42318; }
+.chat-page { max-width: 760px; }
+.chat-page h1 { font-size: 22px; }
+.chat-messages { min-height: 50vh; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 20px 0; }
+.chat-messages > div { max-width: min(75%, 320px); margin: 0; padding: 12px; border-radius: 5px; background: #e5eaf0; overflow-wrap: anywhere; }
+.chat-messages > div.mine { align-self: flex-end; background: #dcecff; }
+.chat-messages audio { display: block; width: min(260px, 60vw); max-width: 100%; }
+.chat-page form { display: flex; gap: 8px; }
+.chat-page form > span { flex: 1; align-self: center; color: #a32222; }
+.chat-page form input { flex: 1; min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 5px; }
+.chat-page form button { width: 46px; border: 0; border-radius: 5px; color: #fff; background: var(--green); }
+.message-list { display: grid; gap: 9px; }
+.message-list a { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+.message-list span { display: flex; flex-direction: column; gap: 4px; }
+.message-list small { color: var(--muted); }
+.sell-page { max-width: 850px; min-height: 100vh; margin: auto; padding: 30px 22px 70px; }
+.sell-page > a:first-child { display: inline-flex; align-items: center; gap: 7px; color: var(--green); }
+.sell-page h1 { margin: 24px 0; font-size: 28px; }
+.sell-page form { border-top: 1px solid var(--line); padding-top: 20px; }
+.sell-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.sell-page label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; }
+.sell-page input, .sell-page select { min-width: 0; height: 43px; padding: 0 11px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: var(--ink); }
+.sell-photos { margin: 24px 0 10px; }
+.sell-photos input { padding-top: 8px; }
+.sell-submit { min-height: 46px; display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 0 20px; border: 0; border-radius: 5px; color: #fff; background: var(--green); font-weight: 700; }
+.sell-submit:disabled { opacity: .6; }
+.sell-success { color: #138a52; }
+.sell-auction-link { display: inline-block; margin-top: 20px; color: var(--green); }
+.sell-drafts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 20px; }
+.sell-drafts h2 { width: 100%; margin: 0 0 6px; font-size: 18px; }
+.sell-drafts button { padding: 8px 12px; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+
+@media (max-width: 1020px) {
+  .main-nav { gap: 17px; }
+  .main-nav a:nth-last-child(-n+2) { display: none; }
+  .search-panel { grid-template-columns: repeat(2, 1fr); }
+  .search-button { margin: 4px; }
+  .hero { min-height: 760px; }
+  .auction-band { padding-top: 32px; }
+  .auction-inner { grid-template-columns: 1fr 1fr 1fr; }
+  .auction-title { grid-column: span 2; }
+  .auction-inner .bid-button { justify-self: end; }
+  .vehicle-media { height: 190px; }
+}
+
+@media (max-width: 760px) {
+  .sell-grid { grid-template-columns: 1fr; }
+  .detail-layout { grid-template-columns: 1fr; }
+  .detail-info h1 { font-size: 24px; }
+  .hero { min-height: 760px; }
+  .site-header { height: 68px; padding: 0 18px; justify-content: space-between; }
+  .brand { font-size: 18px; }
+  .brand-mark { width: 38px; height: 38px; }
+  .account-button span, .icon-button { display: none; }
+  .account-button { width: 40px; padding: 0; justify-content: center; }
+  .menu-button { display: grid; }
+  .main-nav { position: absolute; top: 68px; right: 18px; left: 18px; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 8px; color: var(--ink); background: #fff; border-radius: 5px; box-shadow: 0 12px 28px rgba(0,0,0,.22); }
+  .main-nav-open { display: flex; }
+  .main-nav a, .main-nav a:nth-last-child(-n+2) { display: block; padding: 13px; color: var(--ink); border-bottom: 1px solid var(--line); }
+  .main-nav a:last-child { border: 0; }
+  .hero-image { object-position: 43% center; }
+  .hero-shade { background: rgba(10,21,23,.6); }
+  .hero-content { padding: 82px 20px 55px; }
+  .hero h1 { font-size: 36px; }
+  .hero-content p { font-size: 16px; }
+  .search-panel { width: calc(100% - 28px); grid-template-columns: 1fr 1fr; padding: 12px; }
+  .search-panel label { padding: 3px 8px; }
+  .search-button { grid-column: span 2; }
+  .search-status { right: 18px; }
+  .auction-band { padding: 32px 18px 28px; }
+  .auction-inner { grid-template-columns: 1fr 1fr; gap: 22px 10px; }
+  .auction-title { grid-column: span 2; }
+  .auction-metric { padding-right: 0; border-right: 0; }
+  .auction-inner .bid-button { grid-column: span 2; width: 100%; justify-content: center; }
+  .vehicles-section { padding: 48px 18px; }
+  .vehicle-filters { flex-wrap: wrap; }
+  .section-heading { align-items: center; }
+  .section-heading h2 { font-size: 24px; }
+  .section-heading a { font-size: 0; }
+  .section-heading a svg { width: 22px; height: 22px; }
+  .vehicle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .vehicle-media { height: auto; aspect-ratio: 4 / 3; }
+  .vehicle-placeholder svg { width: 32px; height: 32px; }
+  .vehicle-placeholder span { font-size: 10px; }
+  .vehicle-kind { right: 7px; bottom: 7px; max-width: calc(100% - 14px); padding: 4px 6px; font-size: 9px; }
+  .favorite { top: 7px; left: 7px; width: 30px; height: 30px; }
+  .favorite svg { width: 16px; height: 16px; }
+  .vehicle-body { padding: 10px; }
+  .verified-row { font-size: 9px; }
+  .verified-row svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .vehicle-card h3 { min-height: 38px; margin: 6px 0 9px; font-size: 14px; line-height: 1.35; }
+  .vehicle-published { margin: 0 0 8px; font-size: 10px; }
+  .vehicle-published svg { width: 12px; height: 12px; }
+  .vehicle-facts { flex-direction: column; gap: 5px; padding-bottom: 10px; font-size: 10px; }
+  .vehicle-facts span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vehicle-facts svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .vehicle-bottom { flex-direction: column; align-items: flex-start; gap: 8px; padding-top: 10px; }
+  .vehicle-bottom small { font-size: 9px; }
+  .vehicle-bottom strong { overflow-wrap: anywhere; font-size: 15px; }
+  .vehicle-time { align-self: flex-end; font-size: 10px; }
+  .service-band { margin: 0 18px 48px; grid-template-columns: 1fr; }
+  .service-item + .service-item { border-right: 0; border-top: 1px solid var(--line); }
+  footer { flex-direction: column; align-items: flex-start; padding: 30px 20px; }
+}
+
+@media (max-width: 410px) {
+  .hero h1 { font-size: 31px; }
+  .search-panel { grid-template-columns: 1fr 1fr; }
+  .search-panel label:nth-of-type(n+3) { display: block; }
+  .search-button { grid-column: span 2; }
+  .auction-band { padding-top: 32px; }
+  .auction-title h2 { font-size: 16px; }
+  .vehicle-media { height: auto; }
+}
+
+.auth-page { min-height:100vh; display:grid; grid-template-columns:minmax(430px,.85fr) minmax(420px,1.15fr); background:#fff; }
+.auth-panel { width:min(440px,100%); margin:auto; padding:36px 28px; }.auth-back { display:inline-flex; align-items:center; gap:6px; color:var(--green); font-size:12px; font-weight:700; }.auth-brand { display:flex; align-items:center; gap:11px; margin:32px 0 25px; }.auth-brand>span { width:46px; height:46px; display:grid; place-items:center; color:#fff; background:var(--green); border-radius:6px; }.auth-brand strong,.auth-brand small { display:block; }.auth-brand strong { font-size:18px; }.auth-brand small { margin-top:4px; color:var(--muted); font-size:11px; }
+.auth-tabs { display:grid; grid-template-columns:1fr 1fr; height:45px; margin-bottom:20px; border-bottom:1px solid var(--line); }.auth-tabs button { border:0; color:var(--muted); background:transparent; font-weight:700; }.auth-tabs button.active { color:var(--green); border-bottom:3px solid var(--green); }.auth-form { display:grid; gap:15px; }.auth-form label { display:grid; gap:7px; }.auth-form label>span:first-child { color:#53615e; font-size:11px; font-weight:700; }.auth-form input { width:100%; height:45px; border:1px solid #d6dfdc; border-radius:5px; padding:0 12px; outline:0; }.auth-form input:focus { border-color:#53a596; box-shadow:0 0 0 3px #087d6215; }.password-input { position:relative; display:block; }.password-input input { padding-left:46px; }.password-input button { position:absolute; left:4px; top:4px; width:37px; height:37px; display:grid; place-items:center; border:0; color:#65736f; background:transparent; }.auth-error { padding:10px; color:#8d3035; background:#fbeaec; border:1px solid #ecc5c7; border-radius:5px; font-size:11px; }.auth-submit,.guest-button { min-height:46px; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:5px; font-weight:700; }.auth-submit { border:0; color:#fff; background:var(--green); }.auth-submit:disabled,.guest-button:disabled { opacity:.55; }.auth-divider { display:flex; align-items:center; gap:10px; margin:19px 0; color:#88938f; font-size:10px; }.auth-divider::before,.auth-divider::after { content:''; height:1px; flex:1; background:var(--line); }.guest-button { width:100%; border:1px solid #b5c8c2; color:var(--green-dark); background:#fff; }.guest-note { margin:11px 0 0; color:var(--muted); text-align:center; font-size:10px; line-height:1.6; }
+.auth-context { display:flex; align-items:flex-end; padding:60px; color:#fff; background:#17262a url('/images/libya-car-market-hero.png') center/cover no-repeat; position:relative; }.auth-context::before { content:''; position:absolute; inset:0; background:rgba(12,28,29,.66); }.auth-context>div { position:relative; max-width:530px; }.auth-context span { color:#83d9ba; font-size:13px; font-weight:700; }.auth-context h1 { margin:12px 0; font-size:40px; line-height:1.35; }.auth-context p { margin:0; color:#d3dddd; line-height:1.8; }
+.account-state { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px; padding:24px; text-align:center; }.account-state h1,.account-state p { margin:0; }.account-state .auth-submit { padding:0 20px; }.account-page { min-height:100vh; max-width:1040px; margin:auto; padding:28px; }.account-header { display:flex; align-items:center; justify-content:space-between; padding-bottom:20px; border-bottom:1px solid var(--line); }.account-header a,.account-header button { display:flex; align-items:center; gap:6px; border:0; color:var(--green); background:transparent; font-size:12px; font-weight:700; }.account-profile { min-height:170px; display:flex; align-items:center; gap:16px; }.account-avatar { width:68px; height:68px; display:grid; place-items:center; color:var(--green); background:#e5f3ee; border-radius:50%; }.account-profile small,.account-profile p { color:var(--muted); }.account-profile h1 { margin:5px 0; font-size:24px; }.account-profile p { margin:0; }.account-status { margin-right:auto; display:flex; align-items:center; gap:6px; padding:8px 10px; color:#246a4b; background:#e5f3eb; border-radius:4px; font-size:11px; }.account-grid { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--line); border-radius:6px; background:#fff; }.account-grid article { padding:20px; border-left:1px solid var(--line); }.account-grid article:last-child { border:0; }.account-grid strong,.account-grid span { display:block; }.account-grid strong { font-size:22px; }.account-grid span { margin-top:6px; color:var(--muted); font-size:11px; }.account-empty { min-height:260px; margin-top:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:6px; background:#fff; }.account-empty h2 { font-size:16px; }.account-empty a { color:var(--green); font-size:12px; font-weight:700; }
+@media (max-width:820px) { .auth-page { grid-template-columns:1fr; }.auth-context { display:none; }.auth-panel { padding:28px 20px; }.account-grid { grid-template-columns:1fr 1fr; }.account-grid article:nth-child(2) { border-left:0; }.account-grid article { border-bottom:1px solid var(--line); }.account-status { margin-right:0; }.account-profile { align-items:flex-start; flex-wrap:wrap; padding:25px 0; } }
+
+.technicians-public { min-height:100vh; padding:36px max(20px,calc((100% - 1184px)/2)) 70px; }.technicians-public-header { display:flex; align-items:flex-end; justify-content:space-between; gap:22px; padding-bottom:24px; border-bottom:1px solid var(--line); }.technicians-public-header a { display:flex; align-items:center; gap:5px; margin-bottom:22px; color:var(--green); font-size:11px; font-weight:700; }.technicians-public-header span { color:var(--green); font-size:12px; font-weight:700; }.technicians-public-header h1 { margin:7px 0 0; font-size:31px; }.technicians-public-header label { width:min(390px,100%); height:44px; display:flex; align-items:center; gap:8px; padding:0 12px; border:1px solid var(--line); border-radius:5px; background:#fff; color:var(--muted); }.technicians-public-header input { width:100%; border:0; outline:0; background:transparent; }.public-list-state { min-height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--muted); }.public-list-state h2 { margin:12px 0 4px; color:var(--ink); font-size:18px; }.public-list-state p { margin:0; font-size:11px; }.public-list-state.error { color:var(--red); }.technician-public-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:25px; }.technician-public-card { padding:18px; border:1px solid var(--line); border-radius:6px; background:#fff; }.technician-card-head { display:grid; grid-template-columns:54px 1fr auto; gap:12px; align-items:start; }.technician-avatar { width:54px; height:54px; display:grid; place-items:center; color:var(--green); background:#e6f3ee; border-radius:6px; }.technician-card-head h2 { margin:5px 0 4px; font-size:16px; }.technician-card-head p { margin:0; color:var(--muted); font-size:11px; }.availability { padding:5px 7px; color:#7b4c4e; background:#f7e9ea; border-radius:4px; font-size:9px; }.availability.available { color:#246a4b; background:#e5f3eb; }.technician-meta { display:flex; flex-wrap:wrap; gap:11px; margin:17px 0; padding:13px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); color:var(--muted); font-size:10px; }.technician-meta span { display:flex; align-items:center; gap:4px; }.technician-services { display:grid; gap:8px; min-height:70px; }.technician-services div { display:flex; justify-content:space-between; gap:12px; font-size:11px; }.technician-services strong { color:var(--green-dark); }.technician-card-bottom { display:flex; align-items:flex-end; justify-content:space-between; margin-top:17px; padding-top:14px; border-top:1px solid var(--line); }.technician-card-bottom small,.technician-card-bottom strong { display:block; }.technician-card-bottom small { color:var(--muted); font-size:9px; }.technician-card-bottom strong { margin-top:3px; }.technician-card-bottom a { padding:10px 12px; color:#fff; background:var(--green); border-radius:4px; font-size:10px; font-weight:700; }
+@media (max-width:940px) { .technician-public-grid { grid-template-columns:1fr 1fr; } }
+@media (max-width:650px) { .technicians-public-header { align-items:stretch; flex-direction:column; }.technicians-public-header label { width:100%; }.technician-public-grid { grid-template-columns:1fr; } }
+.market-page { max-width:1240px; margin:0 auto; padding:28px 22px 60px; min-height:100vh; }
+.market-heading { display:flex; align-items:center; gap:18px; padding:0 0 22px; margin-bottom:25px; border-bottom:1px solid #dfe6e3; flex-wrap:wrap; }.market-heading h1 { margin:0; font-size:24px; flex:1; }.market-heading a { display:inline-flex; align-items:center; gap:6px; color:#08645c; font-size:12px; }
+.auction-list { display:grid; gap:14px; }.auction-list-item { display:grid; grid-template-columns:180px minmax(0,1fr) 200px; gap:22px; align-items:center; padding:14px; background:#fff; border:1px solid #dfe6e3; border-radius:6px; }.auction-list-image { aspect-ratio:16/10; display:grid; place-items:center; background:#eef3f1; color:#758c84; border-radius:4px; overflow:hidden; }.auction-list-image img { width:100%; height:100%; object-fit:contain; }.auction-list-item h2 { font-size:18px; margin:9px 0; }.auction-list-item p { display:flex; gap:8px; align-items:center; color:#687572; font-size:12px; }.auction-list-item strong { font-size:20px; }.auction-list-item small { color:#687572; font-size:11px; }
+.auction-status { padding:5px 9px; border-radius:4px; background:#edf1ef; color:#52625c; font-size:11px; }.auction-status.Live { background:#e6f6ec; color:#207348; }.auction-status.Paused { background:#fff1d6; color:#8c6419; }
+.live-auction-layout { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr); gap:28px; align-items:start; }.live-vehicle-image { aspect-ratio:16/10; background:#edf2f0; display:grid; place-items:center; color:#778980; overflow:hidden; border-radius:6px; text-align:center; }.live-vehicle-image img { width:100%; height:100%; object-fit:contain; }.live-vehicle-meta { display:flex; flex-wrap:wrap; gap:20px; padding:17px 0; font-size:12px; color:#5b6d65; }.live-vehicle-meta b { display:inline-block; margin-right:8px; }
+.bidding-panel { background:#fff; border:1px solid #dfe6e3; border-radius:6px; padding:23px; }.bidding-panel-top { display:flex; align-items:center; justify-content:space-between; font-size:12px; }.bidding-panel>p { font-size:12px; color:#65776e; margin:20px 0 7px; }.auction-timer { display:block; font-size:30px; font-variant-numeric:tabular-nums; }.auction-timer.ending { color:#b83f43; }.auction-current-price { display:block; font-size:31px; color:#163e30; }.reserve-state { display:flex; align-items:center; gap:6px; margin:14px 0; font-size:11px; color:#547468; }.auction-costs { padding:10px 0; margin:0; border-top:1px solid #e2e9e5; }.auction-costs>div { display:flex; justify-content:space-between; gap:15px; padding:10px 0; font-size:12px; }.auction-costs dt { color:#687572; }.auction-costs dd { margin:0; font-weight:700; }.payment-deadline { line-height:1.8; }.socket-state { display:flex; align-items:center; gap:6px; font-size:11px; color:#976920; }.socket-state.online { color:#27805a; }.compact-title { font-size:18px; margin:28px 0 15px; }
+.bid-history>div { display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid #e2e9e5; font-size:12px; }.bid-history time { text-align:left; color:#687572; }.bid-history>p { color:#687572; font-size:13px; }.bid-success { padding:11px; background:#e5f4e9; color:#286845; border-radius:4px; }
+.bid-confirm-backdrop { position:fixed; inset:0; background:#0d2419a6; z-index:100; display:grid; place-items:center; padding:20px; }.bid-confirm { max-width:430px; width:100%; background:#fff; border-radius:7px; padding:27px; }.bid-confirm h2 { font-size:22px; }.bid-confirm p { font-size:13px; line-height:1.8; }.bid-confirm .guest-button { margin-top:10px; }
+.live-market-page { max-width:1320px; }
+.live-market-heading { align-items:flex-end; }.live-market-heading>div { flex:1; }.live-market-heading>div small { display:block; margin-bottom:5px; color:#1769d2; font-size:11px; font-weight:700; }.live-market-heading>div h1 { margin:0; }
+.auction-command-bar { position:sticky; top:10px; z-index:20; min-height:92px; display:grid; grid-template-columns:120px minmax(175px,1fr) minmax(175px,1fr) minmax(155px,.85fr) minmax(185px,1fr); align-items:stretch; margin:0 0 24px; overflow:hidden; border:1px solid #bfd0e6; border-radius:7px; background:#fff; box-shadow:0 10px 28px #17375e17; }
+.auction-command-bar>div { min-width:0; border-left:1px solid #e0e7f0; }
+.command-status { position:relative; display:grid; align-content:center; justify-items:center; gap:4px; color:#52657d; background:#f7f9fc; }.command-status.is-live { color:#b4232c; background:#fff4f4; }.command-status small,.command-metric small { color:#708198; font-size:10px; font-weight:700; }.command-status strong { font-size:14px; }
+.live-pulse { width:9px; height:9px; border-radius:50%; background:#9aa8b9; }.is-live .live-pulse { background:#d8303c; box-shadow:0 0 0 5px #d8303c1c; animation:livePulse 1.5s ease-out infinite; }
+@keyframes livePulse { 0% { box-shadow:0 0 0 0 #d8303c42; } 80%,100% { box-shadow:0 0 0 7px #d8303c00; } }
+.command-metric { display:flex; align-items:center; gap:11px; padding:15px 17px; color:#1769d2; }.command-metric>span,.command-metric small,.command-metric strong { display:block; min-width:0; }.command-metric strong { margin-top:7px; overflow:hidden; color:#10233f; font-size:18px; text-overflow:ellipsis; white-space:nowrap; }.command-metric.primary { background:#f1f6fd; }.command-metric.primary strong { color:#0c55b5; font-size:21px; }.command-metric.countdown strong { font-variant-numeric:tabular-nums; letter-spacing:0; }.command-metric.ending,.command-metric.ending strong { color:#c0323c; background:#fff7f7; }
+.command-bid { display:grid; grid-template-columns:24px 1fr; align-content:center; gap:3px 9px; min-width:0; padding:14px 18px; border:0; color:#fff; background:#1769d2; text-align:right; }.command-bid:hover { background:#0d4fa8; }.command-bid:disabled { color:#dce4ed; background:#8391a3; cursor:not-allowed; }.command-bid svg { grid-row:1/3; align-self:center; }.command-bid span { font-size:11px; }.command-bid strong { overflow:hidden; font-size:16px; text-overflow:ellipsis; white-space:nowrap; }
+.live-auction-vehicle { min-width:0; }.auction-utility-row { display:flex; align-items:center; flex-wrap:wrap; gap:10px 20px; padding:13px 0; border-top:1px solid #e0e7f0; border-bottom:1px solid #e0e7f0; color:#5d7088; font-size:11px; }.auction-utility-row span,.inspection-link { display:inline-flex; align-items:center; gap:7px; }.inspection-link { color:#1769d2; font-weight:700; }
+.bidding-panel { border-color:#cbd8e8; box-shadow:0 12px 35px #17375e0d; }.bidding-panel-top strong { color:#10233f; font-size:14px; }.panel-price-focus { margin:20px -23px 0; padding:19px 23px; border-top:1px solid #dce5f0; border-bottom:1px solid #dce5f0; background:#f3f7fd; }.panel-price-focus small,.panel-price-focus strong { display:block; }.panel-price-focus small { color:#65758b; font-size:10px; }.panel-price-focus strong { margin-top:7px; color:#0c55b5; font-size:30px; }.auction-costs .total { margin:4px -8px; padding-inline:8px; color:#0d4fa8; background:#f1f6fd; }.auction-costs .total dd { font-size:15px; }.panel-bid-button { min-height:54px; width:100%; font-size:14px; }.binding-bid-note { display:block; margin-top:10px; color:#65758b; font-size:9px; line-height:1.7; text-align:center; }.confirm-cost { display:flex; align-items:center; justify-content:space-between; gap:15px; margin:18px 0; padding:14px; border:1px solid #cfdceb; border-radius:6px; background:#f3f7fd; }.confirm-cost span { color:#65758b; font-size:11px; }.confirm-cost strong { color:#0c55b5; font-size:16px; }
+.auction-round-status { display:grid; justify-items:center; gap:9px; margin:20px 0 0; color:#65758b; font-size:11px; }.auction-round-ring { width:158px; aspect-ratio:1; padding:11px; border-radius:50%; transition:background .4s ease; }.auction-round-ring>div { width:100%; height:100%; display:grid; align-content:center; justify-items:center; gap:5px; border-radius:50%; background:#fff; text-align:center; }.auction-round-ring strong { color:#10233f; font-size:25px; font-variant-numeric:tabular-nums; }.auction-round-ring small { color:#65758b; font-size:10px; }.auction-wallet-eligibility { display:grid; gap:6px; margin:14px 0; padding:12px 0; border-top:1px solid #dce5f0; font-size:11px; }.auction-wallet-eligibility span { display:flex; justify-content:space-between; gap:10px; }.auction-wallet-eligibility small { color:#65758b; }.auction-wallet-eligibility a { color:#0c55b5; font-weight:700; }.live-bid-value { animation:bid-pop .45s ease-out; }@keyframes bid-pop { from { transform:scale(1.06); opacity:.65; } to { transform:scale(1); opacity:1; } }@media(prefers-reduced-motion:reduce) { .live-bid-value { animation:none; }.auction-round-ring { transition:none; } }
+.notice-item { display:flex; align-items:flex-start; gap:15px; padding:22px 15px; border-bottom:1px solid #dfe6e3; }.notice-item.unread { background:#eef7f2; }.notice-item h2 { font-size:16px; margin:0 0 8px; }.notice-item p { font-size:13px; color:#687572; }.notice-item time { font-size:11px; color:#687572; }.notice-item a { display:block; margin-top:10px; color:#087f73; font-size:12px; }
+.auction-description { padding:16px 0; border-bottom:1px solid #e0e7f0; }.auction-description h2 { margin:0 0 8px; font-size:16px; }.auction-description p { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.7; font-size:13px; }
+.auction-extra-details { padding:12px 0; color:#34465d; }.auction-extra-details summary { cursor:pointer; font-size:12px; font-weight:700; }.auction-extra-details dl { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:14px 0 0; }.auction-extra-details dt { color:#65758b; font-size:10px; }.auction-extra-details dd { margin:4px 0 0; font-size:12px; font-weight:700; }
+.auction-description-field { display:grid; gap:8px; margin:15px 0; font-size:12px; font-weight:700; }.auction-description-field textarea { width:100%; min-height:88px; resize:vertical; padding:10px; border:1px solid #cbd8e8; border-radius:5px; font:inherit; }
+@media(max-width:980px) { .auction-command-bar { position:relative; top:auto; grid-template-columns:105px 1fr 1fr; }.auction-command-bar .countdown { border-top:1px solid #e0e7f0; }.command-bid { grid-column:2/4; border-top:1px solid #e0e7f0; }.live-auction-layout { grid-template-columns:1fr; } }
+@media(max-width:780px) { .market-page { padding:20px 15px 40px; }.auction-list-item { grid-template-columns:110px minmax(0,1fr); gap:12px; }.auction-list-item>div:last-child { grid-column:1/-1; border-top:1px solid #dfe6e3; padding-top:12px; }.market-heading h1 { font-size:20px; }.auction-current-price { font-size:27px; }.live-market-heading { align-items:flex-start; }.auction-command-bar { grid-template-columns:88px 1fr; margin-inline:-4px; }.auction-command-bar>div { min-height:72px; }.command-metric { padding:11px 13px; }.command-metric.primary,.command-metric.countdown { border-top:1px solid #e0e7f0; }.command-metric strong { font-size:16px; }.command-metric.primary strong { font-size:18px; }.command-bid { grid-column:1/3; min-height:63px; }.live-vehicle-image { border-radius:5px; }.bidding-panel { padding:18px; }.panel-price-focus { margin-inline:-18px; padding-inline:18px; } }
+.account-order { padding:18px 0; border-bottom:1px solid #dfe6e3; display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; }.account-order h3 { margin:0 0 6px; font-size:16px; }.account-order p,.account-order small,.account-order time { font-size:12px; color:#66796e; }.account-order .auth-submit { margin-top:12px; font-size:12px; }.account-order .auth-submit:disabled { background:#83928a; cursor:not-allowed; }
+
+.account-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:22px 0; }
+.account-actions>a { min-height:76px; display:flex; align-items:center; gap:13px; padding:15px; border:1px solid var(--line); border-radius:6px; color:var(--green); background:#fff; }
+.account-actions span,.account-actions strong,.account-actions small { display:block; }
+.account-actions strong { color:var(--ink); font-size:14px; }.account-actions small { margin-top:6px; color:var(--muted); font-size:10px; }
+.form-success { display:flex; align-items:center; gap:8px; margin:15px 0; padding:12px 14px; border:1px solid #b9dfc9; border-radius:5px; color:#206c4a; background:#e7f5ed; font-size:12px; }
+.muted-copy { color:var(--muted); font-size:12px; line-height:1.8; }
+
+.dealer-portal { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding-bottom:55px; }
+.account-header>div { display:flex; gap:8px; }
+.dealer-portal-head { display:flex; align-items:center; justify-content:space-between; gap:22px; padding:28px 0 22px; }
+.dealer-identity { display:flex; align-items:center; gap:14px; }.dealer-identity>span { width:56px; height:56px; display:grid; place-items:center; border-radius:6px; color:#fff; background:var(--charcoal); }
+.dealer-identity small,.dealer-identity p { color:var(--muted); font-size:11px; }.dealer-identity h1 { margin:5px 0; font-size:25px; }.dealer-identity p { margin:0; }
+.subscription-summary { min-width:280px; display:flex; align-items:center; gap:11px; padding:15px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+.subscription-summary.active { color:var(--green); border-color:#abd5c3; background:#edf8f3; }.subscription-summary small,.subscription-summary strong,.subscription-summary span { display:block; }.subscription-summary small { color:var(--muted); font-size:9px; }.subscription-summary strong { margin:5px 0; color:var(--ink); font-size:13px; }.subscription-summary span { font-size:9px; }
+.dealer-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; margin-bottom:17px; }.dealer-metrics article { min-height:95px; display:grid; grid-template-columns:34px 1fr; align-items:center; padding:15px; border:1px solid var(--line); border-radius:6px; background:#fff; }.dealer-metrics article>svg { grid-row:1/3; color:var(--green); }.dealer-metrics strong { font-size:21px; }.dealer-metrics span { color:var(--muted); font-size:10px; }
+.dealer-two-columns { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px; }.portal-section { padding:20px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+.section-title { display:flex; align-items:center; justify-content:space-between; gap:15px; margin-bottom:18px; }.section-title small { color:var(--green); font-size:10px; font-weight:700; }.section-title h2 { margin:5px 0 0; font-size:18px; }
+.portal-section>label,.auction-submit-form label { display:grid; gap:7px; margin-bottom:12px; }.portal-section>label>span,.auction-submit-form label>span { color:#53635f; font-size:10px; font-weight:700; }
+.portal-section input,.portal-section select,.auction-submit-form input,.auction-submit-form select { width:100%; height:43px; padding:0 11px; border:1px solid var(--line); border-radius:5px; color:var(--ink); background:#fff; outline:0; }.portal-section input:focus,.portal-section select:focus,.auction-submit-form input:focus,.auction-submit-form select:focus { border-color:#5aa99f; box-shadow:0 0 0 3px #0b827315; }
+.current-plan { display:flex; align-items:flex-start; gap:12px; padding:14px; border:1px solid #b9dfc9; border-radius:5px; color:var(--green); background:#edf8f3; }.current-plan strong,.current-plan small { display:block; color:var(--ink); }.current-plan p,.current-plan small { margin:5px 0 0; font-size:10px; }.current-plan small { color:var(--muted); }
+.pending-plan { margin-top:10px; padding:10px; border:1px solid #ecd49d; border-radius:5px; color:#805d1c; background:#fff8e8; font-size:10px; }
+.portal-payment { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; padding:12px; border:1px solid var(--line); border-radius:5px; }.portal-payment strong,.portal-payment small { display:block; }.portal-payment small { margin-top:4px; color:var(--muted); font-size:9px; }
+.portal-payment button,.dealer-plans article button,.listing-history button,.listing-history a { min-height:37px; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:0 12px; border:0; border-radius:5px; color:#fff; background:var(--green); font-size:10px; font-weight:700; }.portal-payment button:disabled,.dealer-plans article button:disabled,.listing-history button:disabled { background:#8a9791; cursor:not-allowed; }
+.dealer-plans { margin-bottom:15px; }.dealer-plans>.section-title { margin-bottom:12px; }.dealer-plans>div:last-child { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:11px; }
+.dealer-plans article { display:flex; flex-direction:column; min-height:245px; padding:17px; border:1px solid var(--line); border-radius:6px; background:#fbfdfc; }.dealer-plans h3 { margin:0 0 8px; font-size:16px; }.dealer-plans article>strong { font-size:22px; }.dealer-plans article>p { color:var(--muted); font-size:10px; }.dealer-plans ul { flex:1; padding-right:18px; color:#566963; font-size:10px; line-height:2; }.dealer-plans article>button { margin-top:auto; }
+.plan-usage { display:grid; gap:8px; margin-top:14px; padding-top:13px; border-top:1px solid var(--line); }
+.plan-usage>div { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:10px; }.plan-usage strong { color:var(--green-dark); }
+.plan-usage progress { width:100%; height:8px; overflow:hidden; border:0; border-radius:4px; background:#dce7f4; accent-color:var(--green); }
+.plan-limit-warning { margin-bottom:13px; padding:10px 12px; border:1px solid #f1c98f; border-radius:5px; color:#86520e; background:#fff8e9; font-size:10px; line-height:1.7; }
+.dealer-plan-permissions { display:grid; gap:6px; margin:0 0 15px; padding-top:12px; border-top:1px solid var(--line); }
+.dealer-plan-permissions span { display:flex; align-items:center; gap:6px; color:#365b8d; font-size:9px; }.dealer-plan-permissions svg { color:#1d8b55; }
+.dealer-plan-permissions small { color:var(--muted); font-size:9px; }
+.dealer-review { padding:14px 0; border-bottom:1px solid var(--line); }.dealer-review:last-child { border-bottom:0; }.dealer-review>div { display:flex; justify-content:space-between; gap:15px; }.dealer-review span { color:#c78d18; }.dealer-review p { font-size:12px; line-height:1.7; }.dealer-review time { color:var(--muted); font-size:9px; }
+.dealer-inventory { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(330px,.8fr); gap:15px; margin-bottom:15px; }.dealer-vehicle-list article { min-height:66px; display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }.dealer-vehicle-list strong,.dealer-vehicle-list small { display:block; }.dealer-vehicle-list small { margin-top:5px; color:var(--muted); font-size:9px; }.dealer-vehicle-list button { display:flex; align-items:center; gap:5px; padding:7px 9px; border:1px solid #b9dfc9; border-radius:4px; color:var(--green); background:#fff; font-size:9px; }.dealer-vehicle-list button:disabled { opacity:.45; }.vehicle-state { padding:5px 7px; border-radius:4px; color:#6a7772; background:#edf1ef; font-size:9px; }.state-published { color:#246a4b; background:#e5f3eb; }.state-pendingreview { color:#8a5e19; background:#fbf0d8; }.compact-vehicle-form { display:grid; grid-template-columns:1fr 1fr; gap:0 9px; }.compact-vehicle-form label { display:grid; gap:6px; margin-bottom:10px; }.compact-vehicle-form span { color:#53635f; font-size:9px; font-weight:700; }.compact-vehicle-form input,.compact-vehicle-form select { width:100%; height:40px; padding:0 9px; border:1px solid var(--line); border-radius:4px; background:#fff; }
+.dealer-vehicle-list article.dealer-vehicle-entry { display:block; padding:13px 0; }.dealer-vehicle-summary { display:grid; grid-template-columns:48px minmax(0,1fr) auto auto; align-items:center; gap:10px; }.dealer-vehicle-thumb { width:48px; height:48px; display:grid; place-items:center; overflow:hidden; border-radius:5px; color:var(--green); background:#e9f4ef; }.dealer-vehicle-thumb img { width:100%; height:100%; object-fit:cover; }.dealer-vehicle-gallery { display:flex; gap:7px; margin-top:10px; overflow-x:auto; }.dealer-vehicle-gallery>div { position:relative; flex:0 0 64px; height:50px; overflow:hidden; border:1px solid var(--line); border-radius:4px; }.dealer-vehicle-gallery img { width:100%; height:100%; object-fit:cover; }.dealer-vehicle-gallery button { position:absolute; top:3px; left:3px; width:24px; height:24px; display:grid; padding:0; place-items:center; color:#a12d36; border-color:#e8c3c6; background:rgba(255,255,255,.94); }.vehicle-image-upload { display:flex; align-items:center; gap:7px; margin-top:10px; }.vehicle-image-upload label { max-width:190px; display:inline-flex; align-items:center; gap:6px; padding:7px 9px; overflow:hidden; border:1px dashed #a9cfc0; border-radius:4px; color:var(--green); cursor:pointer; font-size:9px; font-weight:700; }.vehicle-image-upload label span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.vehicle-image-upload input { width:1px; height:1px; position:absolute; opacity:0; pointer-events:none; }
+.dealer-auction-request { grid-column:1/-1; }.dealer-auction-request .compact-vehicle-form { grid-template-columns:repeat(3,1fr); }
+.dealer-auction-link { display:block; margin-top:5px; color:var(--green); font-size:11px; font-weight:700; line-height:1.5; }
+
+.auction-submit-page { width:min(1020px,calc(100% - 32px)); margin:0 auto; padding:30px 0 60px; }.auction-submit-page .market-heading { display:block; margin-bottom:18px; }.auction-submit-page .market-heading>a { display:inline-flex; align-items:center; gap:6px; margin-bottom:24px; color:var(--green); font-size:11px; font-weight:700; }.auction-submit-page .market-heading p { max-width:650px; color:var(--muted); line-height:1.7; }
+.auction-fee-band { display:flex; align-items:flex-start; gap:15px; margin-bottom:16px; padding:18px; border:1px solid #b9d8c9; border-radius:6px; color:var(--green); background:#edf8f3; }.auction-fee-band small,.auction-fee-band strong { display:block; }.auction-fee-band small { color:#527066; font-size:10px; }.auction-fee-band strong { margin:6px 0; color:#183e31; font-size:25px; }.auction-fee-band p { margin:0; color:#527066; font-size:10px; line-height:1.7; }
+.auction-submit-form { padding:23px; border:1px solid var(--line); border-radius:6px; background:#fff; }.auction-form-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0 13px; }.auction-form-grid .wide { grid-column:1/-1; }.auction-schedule-title { margin-top:25px; padding-top:22px; border-top:1px solid var(--line); }
+.auction-commitment { display:flex; gap:12px; margin:12px 0 18px; padding:14px; border:1px solid #ecd49d; border-radius:5px; color:#805d1c; background:#fff8e8; }.auction-commitment strong { font-size:11px; }.auction-commitment p { margin:5px 0 0; font-size:10px; line-height:1.8; }.auction-submit-button { width:100%; }
+.listing-history { margin-top:18px; padding:20px; border:1px solid var(--line); border-radius:6px; background:#fff; }.listing-history article { display:grid; grid-template-columns:minmax(220px,1fr) 130px auto; align-items:center; gap:15px; padding:14px 0; border-bottom:1px solid var(--line); }.listing-history article:last-child { border-bottom:0; }.listing-history strong,.listing-history small,.listing-history span { display:block; }.listing-history small,.listing-history span { margin-top:5px; color:var(--muted); font-size:9px; }
+@media(max-width:800px) { .dealer-portal-head { align-items:stretch; flex-direction:column; }.subscription-summary { min-width:0; }.dealer-metrics { grid-template-columns:1fr 1fr; }.dealer-two-columns,.dealer-inventory { grid-template-columns:1fr; }.dealer-auction-request { grid-column:auto; }.dealer-auction-request .compact-vehicle-form { grid-template-columns:1fr 1fr; }.dealer-plans>div:last-child { grid-template-columns:1fr; }.auction-form-grid { grid-template-columns:1fr 1fr; }.listing-history article { grid-template-columns:1fr auto; }.listing-history article button,.listing-history article a { grid-column:1/-1; } }
+@media(max-width:520px) { .account-actions,.auction-form-grid { grid-template-columns:1fr; }.dealer-metrics { grid-template-columns:1fr 1fr; }.auction-form-grid .wide { grid-column:auto; }.dealer-portal,.auction-submit-page { width:min(100% - 22px,1180px); }.auction-submit-form,.portal-section,.listing-history { padding:15px; }.dealer-vehicle-summary { grid-template-columns:44px minmax(0,1fr) auto; }.dealer-vehicle-summary>button { grid-column:2/-1; justify-self:start; } }
+
+.public-dealer-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }.public-dealer-grid>a { min-height:225px; display:grid; grid-template-columns:64px 1fr; gap:14px; padding:18px; border:1px solid var(--line); border-radius:6px; background:#fff; }.public-dealer-logo { width:64px; height:64px; display:grid; place-items:center; overflow:hidden; border-radius:6px; color:var(--green); background:#e6f3ee; }.public-dealer-logo img { width:100%; height:100%; object-fit:contain; }.public-dealer-grid p { display:flex; align-items:center; gap:5px; margin:4px 0 7px; color:var(--green); font-size:9px; font-weight:700; }.public-dealer-grid h2 { margin:0 0 8px; font-size:17px; }.public-dealer-grid span { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:10px; }.public-dealer-grid dl { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; align-self:end; margin:12px 0 0; padding-top:14px; border-top:1px solid var(--line); }.public-dealer-grid dl div+div { border-right:1px solid var(--line); padding-right:14px; }.public-dealer-grid dt { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:9px; }.public-dealer-grid dd { margin:6px 0 0; font-size:13px; font-weight:700; }
+.dealer-public-detail { width:min(1050px,calc(100% - 32px)); margin:0 auto; padding:30px 0 60px; }.dealer-public-detail>header>a { display:inline-flex; align-items:center; gap:6px; color:var(--green); font-size:11px; font-weight:700; }.dealer-public-title { min-height:170px; display:flex; align-items:center; gap:16px; }.dealer-public-title>span { width:72px; height:72px; display:grid; place-items:center; border-radius:6px; color:#fff; background:var(--charcoal); }.dealer-public-title p { display:flex; align-items:center; gap:6px; margin:0; color:var(--green); font-size:10px; font-weight:700; }.dealer-public-title h1 { margin:7px 0; font-size:27px; }.dealer-public-title div>small { display:flex; align-items:center; gap:5px; color:var(--muted); }.dealer-public-title>strong { margin-right:auto; display:flex; align-items:center; gap:6px; color:#b78119; font-size:20px; }.dealer-public-title>strong small { color:var(--muted); font-size:9px; }.dealer-review-layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr); gap:15px; }.portal-section textarea { width:100%; resize:vertical; padding:11px; border:1px solid var(--line); border-radius:5px; font:inherit; outline:0; }
+@media(max-width:850px) { .public-dealer-grid { grid-template-columns:1fr 1fr; }.dealer-review-layout { grid-template-columns:1fr; } }
+@media(max-width:540px) { .public-dealer-grid { grid-template-columns:1fr; }.dealer-public-title { align-items:flex-start; flex-wrap:wrap; padding:28px 0; }.dealer-public-title>strong { margin-right:0; width:100%; }.dealer-public-detail { width:calc(100% - 22px); } }
+
+.technician-profile-band { display:grid; grid-template-columns:repeat(3,1fr); margin-bottom:16px; border:1px solid var(--line); border-radius:6px; background:#fff; }.technician-profile-band>div { min-height:92px; display:grid; grid-template-columns:32px 1fr; align-content:center; gap:3px 10px; padding:16px; }.technician-profile-band>div+div { border-right:1px solid var(--line); }.technician-profile-band svg { grid-row:1/3; color:var(--green); }.technician-profile-band strong,.technician-profile-band span { display:block; }.technician-profile-band strong { font-size:18px; }.technician-profile-band span { color:var(--muted); font-size:9px; }
+.technician-service-detail { display:grid; }.technician-service-detail>div { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:13px 0; border-bottom:1px solid var(--line); font-size:12px; }.technician-service-detail span small { display:block; margin-top:5px; color:var(--muted); font-size:9px; }.technician-service-detail strong { color:var(--green); }.review-heading { margin-top:28px; padding-top:22px; border-top:1px solid var(--line); }
+@media(max-width:560px) { .technician-profile-band { grid-template-columns:1fr; }.technician-profile-band>div+div { border-right:0; border-top:1px solid var(--line); } }
+.workspace-tabs,.workspace-actions { display:flex; flex-wrap:wrap; gap:10px; margin:20px 0; }
+.workspace-tabs button,.workspace-actions button,.workspace-actions a,.account-order button { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid #d9e2ee; border-radius:5px; background:#fff; color:#1769d2; }
+.workspace-tabs button[aria-pressed=true] { background:#1769d2; color:#fff; }
+.workspace-columns { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.workspace-form { display:grid; gap:15px; margin:22px 0; max-width:650px; }
+.workspace-form h2 { margin:5px 0; font-size:18px; }
+.workspace-form label { display:grid; gap:8px; }
+.workspace-form input,.workspace-form select,.workspace-form textarea { width:100%; min-width:0; min-height:42px; border:1px solid #d9e2ee; border-radius:5px; background:#fff; padding:10px; font:inherit; }
+.workspace-form .workspace-checkbox { display:flex; flex-direction:row; align-items:center; }
+.workspace-form .workspace-checkbox input { width:20px; height:20px; min-height:0; }
+.wallet-balance { display:flex; align-items:center; flex-wrap:wrap; gap:14px; padding:24px; background:#1769d2; color:#fff; border-radius:8px; }
+.wallet-balance strong { font-size:30px; flex-basis:100%; }
+.workspace-request { padding:18px 0; border-bottom:1px solid #d9e2ee; }
+.workspace-request h3 { font-size:17px; margin:0 0 10px; }
+.workspace-plans { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:14px; }
+.workspace-plans article { padding:20px; background:#fff; border:1px solid #d9e2ee; border-radius:6px; }
+.save-controls { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.save-controls button { width:40px; height:40px; display:grid; place-items:center; border:1px solid #d9e2ee; border-radius:5px; background:#fff; color:#1769d2; }
+.save-controls button[aria-pressed=true] { color:#c0323c; }
+.save-controls small { flex-basis:100%; }
+.policy-body { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.9; margin-top:25px; }
+@media(max-width:700px) { .workspace-columns { grid-template-columns:1fr; } }

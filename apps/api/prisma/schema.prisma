@@ -1,0 +1,1300 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountStatus {
+  Active
+  PendingVerification
+  Suspended
+  Banned
+  ReviewRequired
+  Archived
+}
+
+enum ApprovalStatus {
+  Draft
+  PendingReview
+  Approved
+  Rejected
+  Published
+  Archived
+}
+
+enum DealerStatus {
+  Draft
+  PendingReview
+  Verified
+  Rejected
+  Suspended
+  Frozen
+  Archived
+}
+
+enum SubscriptionStatus {
+  Pending
+  Active
+  Expired
+  Cancelled
+  Suspended
+}
+
+enum BillingModel {
+  Subscription
+  Commission
+  Hybrid
+}
+
+enum VehicleSaleType {
+  Auction
+  QuickSale
+  FixedPrice
+  Negotiable
+}
+
+enum VehicleCategory {
+  Car
+  Truck
+  Motorcycle
+  Bicycle
+  Other
+}
+
+enum VehicleCondition {
+  New
+  Used
+  Accident
+  NeedsRepair
+  Excellent
+  Runs
+  NotRunning
+}
+
+enum AuctionStatus {
+  Scheduled
+  Live
+  Paused
+  Completed
+  Cancelled
+  NoWinner
+  PaymentPending
+  Sold
+  Relisted
+}
+
+enum BidStatus {
+  Accepted
+  Rejected
+  Outbid
+  Cancelled
+}
+
+enum OrderType {
+  AuctionDeposit
+  AuctionListingFee
+  InspectionFee
+  DealerSubscription
+  MemberSubscription
+  WalletRecharge
+  Advertisement
+  PlatformFee
+}
+
+enum OrderStatus {
+  Pending
+  PaymentPending
+  Paid
+  Cancelled
+  Expired
+  Refunded
+}
+
+enum PaymentStatus {
+  Pending
+  Processing
+  Paid
+  Failed
+  Cancelled
+  Refunded
+  PartiallyRefunded
+}
+
+enum LedgerDirection {
+  Debit
+  Credit
+}
+
+enum InspectionStatus {
+  Requested
+  PaymentPending
+  Paid
+  Scheduled
+  InProgress
+  ReportSubmitted
+  Completed
+  Cancelled
+  RejectedByTechnician
+}
+
+enum DisputeStatus {
+  Open
+  UnderReview
+  WaitingForEvidence
+  Resolved
+  Rejected
+  Closed
+}
+
+enum AdvertisementStatus {
+  Draft
+  PendingReview
+  Approved
+  Active
+  Paused
+  Completed
+  Rejected
+  Archived
+}
+
+enum NotificationChannel {
+  InApp
+  Push
+  Email
+  Sms
+}
+
+enum MessageContext {
+  Support
+  Inspection
+  Dispute
+  Order
+}
+
+model User {
+  id                  String        @id @default(uuid()) @map("_id")
+  // Partial uniqueness for non-null emails is installed by scripts/user-email-index.cjs.
+  email               String?
+  phone               String?       @unique
+  passwordHash        String
+  fullName            String?
+  avatarUrl           String?
+  defaultLocale       String        @default("ar")
+  preferences         Json?
+  status              AccountStatus @default(PendingVerification)
+  phoneVerifiedAt     DateTime?
+  emailVerifiedAt     DateTime?
+  nationalIdEncrypted String?
+  lastLoginAt         DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  deletedAt           DateTime?
+
+  roles                  UserRole[]
+  documents              UserDocument[]
+  refreshSessions        RefreshSession[]
+  ownedDealer            Dealer?
+  dealerStaffMemberships DealerStaff[]
+  vehicles               Vehicle[]           @relation("UserVehicles")
+  bids                   Bid[]               @relation("UserBids")
+  highestAuctions        Auction[]           @relation("HighestBidder")
+  auctionResults         AuctionResult[]     @relation("AuctionWinner")
+  orders                 Order[]
+  payments               Payment[]
+  walletLedger           WalletLedger[]
+  technician             Technician?
+  inspectionRequests     InspectionRequest[] @relation("InspectionRequester")
+  favorites              Favorite[]
+  watchlists             Watchlist[]
+  savedSearches          SavedSearch[]
+  notifications          Notification[]
+  campaignDeliveries     NotificationCampaignDelivery[]
+  pushDevices            PushDevice[]
+  supportTickets         SupportTicket[]
+  messages               Message[]           @relation("MessageSender")
+  listingConversationsAsBuyer ListingConversation[] @relation("ListingBuyer")
+  listingConversationsAsSeller ListingConversation[] @relation("ListingSeller")
+  listingMessages ListingMessage[]
+  disputes               Dispute[]           @relation("DisputeUser")
+  reviews                Review[]            @relation("ReviewAuthor")
+  auditLogs              AuditLog[]          @relation("AuditActor")
+  fraudAlerts            FraudAlert[]
+  memberSubscriptions    MemberSubscription[]
+}
+
+model Role {
+  id          String           @id @default(uuid()) @map("_id")
+  code        String           @unique
+  name        String
+  description String?
+  createdAt   DateTime         @default(now())
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(uuid()) @map("_id")
+  code        String           @unique
+  description String?
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+}
+
+model UserRole {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid()) @map("_id")
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+model RefreshSession {
+  id        String    @id @default(uuid()) @map("_id")
+  userId    String
+  tokenHash String    @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+}
+
+model UserDocument {
+  id          String         @id @default(uuid()) @map("_id")
+  userId      String
+  type        String
+  storageKey  String
+  fileName    String
+  mimeType    String
+  isSensitive Boolean        @default(true)
+  status      ApprovalStatus @default(PendingReview)
+  createdAt   DateTime       @default(now())
+  user        User           @relation(fields: [userId], references: [id])
+}
+
+model Dealer {
+  id            String       @id @default(uuid()) @map("_id")
+  ownerUserId   String       @unique
+  name          String
+  slug          String       @unique
+  logoUrl       String?
+  coverUrl      String?
+  phone         String?
+  cityId        String?
+  regionId      String?
+  address       String?
+  licenseNumber String?
+  verifiedAt    DateTime?
+  status        DealerStatus @default(Draft)
+  ratingAverage Float        @default(0)
+  ratingCount   Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  owner                  User                    @relation(fields: [ownerUserId], references: [id])
+  city                   City?                   @relation(fields: [cityId], references: [id])
+  region                 Region?                 @relation(fields: [regionId], references: [id])
+  staff                  DealerStaff[]
+  subscriptions          DealerSubscription[]
+  vehicles               Vehicle[]
+  reviews                Review[]
+  advertisementCampaigns AdvertisementCampaign[]
+}
+
+model DealerStaff {
+  id        String         @id @default(uuid()) @map("_id")
+  dealerId  String
+  userId    String
+  title     String?
+  status    ApprovalStatus @default(Approved)
+  createdAt DateTime       @default(now())
+  dealer    Dealer         @relation(fields: [dealerId], references: [id])
+  user      User           @relation(fields: [userId], references: [id])
+
+  @@unique([dealerId, userId])
+}
+
+model DealerPlan {
+  id                 String               @id @default(uuid()) @map("_id")
+  memberSubscriptions MemberSubscription[]
+  code               String               @unique
+  name               String
+  price              BigInt
+  currency           String               @default("LYD")
+  durationDays       Int
+  vehicleLimit       Int?
+  auctionLimit       Int?
+  staffLimit         Int?
+  searchBoostEnabled Boolean              @default(false)
+  adsIncluded        Boolean              @default(false)
+  extraVehicleFee    BigInt?
+  commissionRate     Float?
+  billingModel       BillingModel         @default(Subscription)
+  features           Json?
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  subscriptions      DealerSubscription[]
+}
+
+model PlanCapability {
+  id          String   @id @default(uuid()) @map("_id")
+  code        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CapabilityOverride {
+  id          String   @id @default(uuid()) @map("_id")
+  subjectType String
+  subjectId   String
+  capability  String
+  effect      String
+  reason      String?
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([subjectType, subjectId, capability])
+  @@index([subjectType, subjectId])
+}
+
+model DealerSubscription {
+  id          String             @id @default(uuid()) @map("_id")
+  dealerId    String
+  planId      String
+  status      SubscriptionStatus @default(Pending)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  activatedAt DateTime?
+  cancelledAt DateTime?
+  metadata    Json?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  dealer      Dealer             @relation(fields: [dealerId], references: [id])
+  plan        DealerPlan         @relation(fields: [planId], references: [id])
+}
+
+model Vehicle {
+  id                 String           @id @default(uuid()) @map("_id")
+  lotNumber          String           @unique
+  vinEncrypted       String?
+  ownerUserId        String?
+  dealerId           String?
+  make               String
+  model              String
+  category           VehicleCategory? @default(Car)
+  trim               String?
+  year               Int
+  exteriorColor      String?
+  interiorColor      String?
+  fuelType           String?
+  transmission       String?
+  drivetrain         String?
+  mileageKm          Int?
+  engineCapacityCc   Int?
+  cylinders          Int?
+  bodyType           String?
+  doors              Int?
+  seats              Int?
+  registrationStatus String?
+  ownershipStatus    String?
+  cityId             String?
+  regionId           String?
+  address            String?
+  latitude           Float?
+  longitude          Float?
+  saleType           VehicleSaleType  @default(Auction)
+  condition          VehicleCondition @default(Used)
+  approvalStatus     ApprovalStatus   @default(Draft)
+  quickSalePrice     BigInt?
+  viewCount          Int              @default(0)
+  bidCounter         Int              @default(0)
+  auctionLocked      Boolean          @default(false)
+  auctionVersion     Int              @default(0)
+  publishedAt        DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+
+  owner              User?                 @relation("UserVehicles", fields: [ownerUserId], references: [id])
+  dealer             Dealer?               @relation(fields: [dealerId], references: [id])
+  city               City?                 @relation(fields: [cityId], references: [id])
+  region             Region?               @relation(fields: [regionId], references: [id])
+  images             VehicleImage[]
+  videos             VehicleVideo[]
+  damageReports      VehicleDamageReport[]
+  documents          VehicleDocument[]
+  snapshots          VehicleSnapshot[]
+  auctions           Auction[]
+  auctionVehicles    AuctionVehicle[]
+  inspectionRequests InspectionRequest[]
+  favorites          Favorite[]
+  watchlists         Watchlist[]
+  reviews            Review[]
+  listingConversations ListingConversation[]
+}
+
+model ListingConversation {
+  id         String   @id @default(uuid()) @map("_id")
+  vehicleId  String
+  buyerId    String
+  sellerId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id])
+  buyer      User     @relation("ListingBuyer", fields: [buyerId], references: [id])
+  seller     User     @relation("ListingSeller", fields: [sellerId], references: [id])
+  messages   ListingMessage[]
+
+  @@unique([vehicleId, buyerId])
+}
+
+model ListingMessage {
+  id             String @id @default(uuid()) @map("_id")
+  conversationId String
+  senderId       String
+  body           String @default("")
+  audioKey       String?
+  audioDurationSeconds Int?
+  createdAt      DateTime @default(now())
+  conversation   ListingConversation @relation(fields: [conversationId], references: [id])
+  sender         User @relation(fields: [senderId], references: [id])
+}
+
+model VehicleImage {
+  id           String   @id @default(uuid()) @map("_id")
+  vehicleId    String
+  category     String
+  storageKey   String
+  thumbnailKey String?
+  sortOrder    Int      @default(0)
+  isSensitive  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model VehicleVideo {
+  id           String   @id @default(uuid()) @map("_id")
+  vehicleId    String
+  storageKey   String
+  thumbnailKey String?
+  createdAt    DateTime @default(now())
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model VehicleDamageReport {
+  id          String   @id @default(uuid()) @map("_id")
+  vehicleId   String
+  damageType  String
+  severity    String?
+  description String?
+  imageId     String?
+  markerX     Float?
+  markerY     Float?
+  createdAt   DateTime @default(now())
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model VehicleDocument {
+  id          String         @id @default(uuid()) @map("_id")
+  vehicleId   String
+  type        String
+  storageKey  String
+  fileName    String
+  mimeType    String
+  isSensitive Boolean        @default(true)
+  status      ApprovalStatus @default(PendingReview)
+  createdAt   DateTime       @default(now())
+  vehicle     Vehicle        @relation(fields: [vehicleId], references: [id])
+}
+
+model VehicleSnapshot {
+  id        String   @id @default(uuid()) @map("_id")
+  vehicleId String
+  reason    String
+  data      Json
+  createdAt DateTime @default(now())
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model AuctionSession {
+  id                     String           @id @default(uuid()) @map("_id")
+  title                  String
+  startsAt               DateTime
+  endsAt                 DateTime?
+  status                 AuctionStatus    @default(Scheduled)
+  vehicleDurationSeconds Int?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  auctionVehicles        AuctionVehicle[]
+}
+
+model Auction {
+  id                          String        @id @default(uuid()) @map("_id")
+  vehicleId                   String
+  description                 String?
+  startsAt                    DateTime
+  endsAt                      DateTime
+  startingPrice               BigInt
+  currentBidAmount            BigInt?
+  bidIncrement                BigInt
+  reservePrice                BigInt?
+  maxBidAmount                BigInt?
+  antiSnipingWindowSeconds    Int?
+  antiSnipingExtensionSeconds Int?
+  status                      AuctionStatus @default(Scheduled)
+  highestBidderId             String?
+  bidCount                    Int           @default(0)
+  version                     Int           @default(0)
+  ruleSnapshot                Json?
+  createdAt                   DateTime      @default(now())
+  updatedAt                   DateTime      @updatedAt
+
+  vehicle       Vehicle          @relation(fields: [vehicleId], references: [id])
+  highestBidder User?            @relation("HighestBidder", fields: [highestBidderId], references: [id])
+  sessionItems  AuctionVehicle[]
+  bids          Bid[]
+  bidHistory    BidHistory[]
+  result        AuctionResult?
+}
+
+model AuctionVehicle {
+  id        String          @id @default(uuid()) @map("_id")
+  sessionId String?
+  auctionId String
+  vehicleId String
+  sortOrder Int             @default(0)
+  status    AuctionStatus   @default(Scheduled)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  session   AuctionSession? @relation(fields: [sessionId], references: [id])
+  auction   Auction         @relation(fields: [auctionId], references: [id])
+  vehicle   Vehicle         @relation(fields: [vehicleId], references: [id])
+
+  @@unique([sessionId, sortOrder])
+}
+
+model Bid {
+  id             String       @id @default(uuid()) @map("_id")
+  auctionId      String
+  bidderId       String
+  amount         BigInt
+  idempotencyKey String       @default(uuid())
+  status         BidStatus    @default(Accepted)
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime     @default(now())
+  auction        Auction      @relation(fields: [auctionId], references: [id])
+  bidder         User         @relation("UserBids", fields: [bidderId], references: [id])
+  history        BidHistory[]
+
+  @@unique([auctionId, bidderId, idempotencyKey])
+  @@index([auctionId, amount])
+}
+
+model BidHistory {
+  id        String   @id @default(uuid()) @map("_id")
+  auctionId String
+  bidId     String?
+  bidderId  String?
+  amount    BigInt?
+  eventType String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  auction   Auction  @relation(fields: [auctionId], references: [id])
+  bid       Bid?     @relation(fields: [bidId], references: [id])
+}
+
+model AuctionResult {
+  id                String        @id @default(uuid()) @map("_id")
+  auctionId         String        @unique
+  winnerId          String?
+  finalAmount       BigInt?
+  reserveMet        Boolean       @default(false)
+  buyerFee          BigInt        @default(0)
+  depositAmount     BigInt        @default(0)
+  remainingAmount   BigInt        @default(0)
+  paymentDueAt      DateTime?
+  winnerAttempt     Int           @default(0)
+  excludedWinnerIds String[]
+  status            AuctionStatus @default(Completed)
+  createdAt         DateTime      @default(now())
+  auction           Auction       @relation(fields: [auctionId], references: [id])
+  winner            User?         @relation("AuctionWinner", fields: [winnerId], references: [id])
+}
+
+model Order {
+  id          String      @id @default(uuid()) @map("_id")
+  userId      String
+  type        OrderType
+  status      OrderStatus @default(Pending)
+  subtotal    BigInt
+  fees        BigInt      @default(0)
+  total       BigInt
+  currency    String      @default("LYD")
+  referenceId String?
+  version     Int         @default(0)
+  metadata    Json?
+  expiresAt   DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  user        User        @relation(fields: [userId], references: [id])
+  payments    Payment[]
+}
+
+model PaymentProvider {
+  id           String               @id @default(uuid()) @map("_id")
+  code         String               @unique
+  name         String
+  isActive     Boolean              @default(false)
+  config       Json?
+  createdAt    DateTime             @default(now())
+  transactions PaymentTransaction[]
+}
+
+model Payment {
+  id                    String               @id @default(uuid()) @map("_id")
+  orderId               String
+  userId                String
+  status                PaymentStatus        @default(Pending)
+  amount                BigInt
+  currency              String               @default("LYD")
+  provider              String
+  providerTransactionId String?
+  checkoutUrl           String?
+  idempotencyKey        String               @unique @default(uuid())
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+  order                 Order                @relation(fields: [orderId], references: [id])
+  user                  User                 @relation(fields: [userId], references: [id])
+  transactions          PaymentTransaction[]
+  refunds               Refund[]
+}
+
+model PaymentTransaction {
+  id                    String           @id @default(uuid()) @map("_id")
+  paymentId             String
+  paymentProviderId     String?
+  providerTransactionId String?
+  providerEventId       String?          @unique
+  status                PaymentStatus
+  amount                BigInt
+  currency              String           @default("LYD")
+  rawResponse           Json?
+  webhookVerified       Boolean          @default(false)
+  createdAt             DateTime         @default(now())
+  payment               Payment          @relation(fields: [paymentId], references: [id])
+  provider              PaymentProvider? @relation(fields: [paymentProviderId], references: [id])
+}
+
+model Refund {
+  id        String        @id @default(uuid()) @map("_id")
+  paymentId String
+  amount    BigInt
+  status    PaymentStatus @default(Processing)
+  reason    String
+  createdAt DateTime      @default(now())
+  payment   Payment       @relation(fields: [paymentId], references: [id])
+}
+
+model WalletLedger {
+  id             String          @id @default(uuid()) @map("_id")
+  userId         String
+  direction      LedgerDirection
+  amount         BigInt
+  currency       String          @default("LYD")
+  type           String
+  referenceId    String?
+  description    String?
+  idempotencyKey String          @unique @default(uuid())
+  metadata       Json?
+  createdAt      DateTime        @default(now())
+  user           User            @relation(fields: [userId], references: [id])
+
+  @@index([userId, currency, createdAt])
+}
+
+model WalletAccount {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  currency  String   @default("LYD")
+  balance   BigInt   @default(0)
+  version   Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, currency])
+}
+
+model RateLimitWindow {
+  id        String   @id @map("_id")
+  attempts  Int      @default(0)
+  expiresAt DateTime
+}
+
+model PhoneOtpChallenge {
+  id         String   @id @default(uuid()) @map("_id")
+  phone      String   @unique
+  pinHash    String?
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  lastSentAt DateTime
+  version    Int      @default(0)
+}
+
+model Technician {
+  id                   String              @id @default(uuid()) @map("_id")
+  userId               String              @unique
+  name                 String
+  photoUrl             String?
+  specialty            String
+  yearsExperience      Int?
+  cityId               String?
+  serviceRegions       String[]
+  phone                String?
+  workingHours         Json?
+  basePrice            BigInt
+  availabilityStatus   String              @default("available")
+  approvalStatus       ApprovalStatus      @default(PendingReview)
+  ratingAverage        Float               @default(0)
+  ratingCount          Int                 @default(0)
+  completedInspections Int                 @default(0)
+  portfolio            Json?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  user                 User                @relation(fields: [userId], references: [id])
+  city                 City?               @relation(fields: [cityId], references: [id])
+  services             TechnicianService[]
+  inspectionRequests   InspectionRequest[]
+  reviews              Review[]
+}
+
+model TechnicianService {
+  id              String     @id @default(uuid()) @map("_id")
+  technicianId    String
+  name            String
+  price           BigInt
+  durationMinutes Int?
+  isActive        Boolean    @default(true)
+  technician      Technician @relation(fields: [technicianId], references: [id])
+}
+
+model InspectionRequest {
+  id             String            @id @default(uuid()) @map("_id")
+  requesterId    String
+  vehicleId      String
+  technicianId   String?
+  cityId         String?
+  inspectionType String
+  scheduledAt    DateTime?
+  notes          String?
+  price          BigInt
+  status         InspectionStatus  @default(Requested)
+  version        Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  requester      User              @relation("InspectionRequester", fields: [requesterId], references: [id])
+  vehicle        Vehicle           @relation(fields: [vehicleId], references: [id])
+  technician     Technician?       @relation(fields: [technicianId], references: [id])
+  city           City?             @relation(fields: [cityId], references: [id])
+  report         InspectionReport?
+}
+
+model InspectionReport {
+  id                  String            @id @default(uuid()) @map("_id")
+  inspectionRequestId String            @unique
+  technicianNotes     String?
+  engineCheck         Json?
+  transmissionCheck   Json?
+  electricCheck       Json?
+  acCheck             Json?
+  bodyCheck           Json?
+  chassisCheck        Json?
+  tireCheck           Json?
+  brakeCheck          Json?
+  suspensionCheck     Json?
+  computerCheck       Json?
+  defects             Json?
+  recommendations     String?
+  overallScore        Int?
+  createdAt           DateTime          @default(now())
+  request             InspectionRequest @relation(fields: [inspectionRequestId], references: [id])
+  images              InspectionImage[]
+}
+
+model InspectionImage {
+  id         String           @id @default(uuid()) @map("_id")
+  reportId   String
+  category   String
+  storageKey String
+  createdAt  DateTime         @default(now())
+  report     InspectionReport @relation(fields: [reportId], references: [id])
+}
+
+model Favorite {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  vehicleId String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+
+  @@unique([userId, vehicleId])
+}
+
+model Watchlist {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  vehicleId String?
+  dealerId  String?
+  auctionId String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+}
+
+model SavedSearch {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  name      String
+  filters   Json
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String              @id @default(uuid()) @map("_id")
+  userId    String
+  channel   NotificationChannel @default(InApp)
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+  pushState String @default("Pending")
+  pushAttempts Int @default(0)
+  pushNextAttemptAt DateTime?
+  pushClaimedAt DateTime?
+  pushSentAt DateTime?
+  pushError String?
+  createdAt DateTime            @default(now())
+  user      User                @relation(fields: [userId], references: [id])
+
+  @@index([pushState, pushNextAttemptAt])
+}
+
+model NotificationCampaign {
+  id             String   @id @default(uuid()) @map("_id")
+  actorId        String
+  audience       String
+  recipientId    String?
+  mode           String
+  title          String
+  body           String
+  dueAt          DateTime
+  status         String   @default("Scheduled")
+  cursor         String?
+  processedCount Int      @default(0)
+  deliveredCount Int      @default(0)
+  claimedAt      DateTime?
+  claimToken     String?
+  completedAt    DateTime?
+  createdAt      DateTime @default(now())
+  deliveries     NotificationCampaignDelivery[]
+
+  @@index([status, dueAt])
+}
+
+model NotificationCampaignDelivery {
+  id         String   @id @default(uuid()) @map("_id")
+  campaignId String
+  userId     String
+  createdAt  DateTime @default(now())
+  campaign   NotificationCampaign @relation(fields: [campaignId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([campaignId, userId])
+}
+
+model PushDevice {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model ScheduledNotification {
+  id          String   @id @default(uuid()) @map("_id")
+  recipientId String
+  actorId     String
+  title       String
+  body        String
+  dueAt       DateTime
+  status      String   @default("Scheduled")
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([status, dueAt])
+}
+
+model AuctionNotice {
+  id        String   @id @default(uuid()) @map("_id")
+  auctionId String
+  userId    String
+  kind      String
+  createdAt DateTime @default(now())
+
+  @@unique([auctionId, userId, kind])
+}
+
+model NotificationTemplate {
+  id        String              @id @default(uuid()) @map("_id")
+  code      String              @unique
+  channel   NotificationChannel
+  locale    String              @default("ar")
+  subject   String?
+  body      String
+  isActive  Boolean             @default(true)
+  createdAt DateTime            @default(now())
+}
+
+model SupportTicket {
+  id        String    @id @default(uuid()) @map("_id")
+  userId    String
+  subject   String
+  status    String    @default("open")
+  priority  String    @default("normal")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+}
+
+model Message {
+  id              String         @id @default(uuid()) @map("_id")
+  senderId        String
+  context         MessageContext
+  body            String
+  supportTicketId String?
+  disputeId       String?
+  createdAt       DateTime       @default(now())
+  sender          User           @relation("MessageSender", fields: [senderId], references: [id])
+  supportTicket   SupportTicket? @relation(fields: [supportTicketId], references: [id])
+  dispute         Dispute?       @relation(fields: [disputeId], references: [id])
+}
+
+model Dispute {
+  id          String            @id @default(uuid()) @map("_id")
+  caseNumber  String            @unique
+  userId      String
+  dealerId    String?
+  vehicleId   String?
+  auctionId   String?
+  amount      BigInt?
+  reason      String
+  status      DisputeStatus     @default(Open)
+  decision    String?
+  decidedById String?
+  decidedAt   DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  user        User              @relation("DisputeUser", fields: [userId], references: [id])
+  evidence    DisputeEvidence[]
+  messages    Message[]
+}
+
+model DisputeEvidence {
+  id         String   @id @default(uuid()) @map("_id")
+  disputeId  String
+  type       String
+  storageKey String?
+  text       String?
+  createdAt  DateTime @default(now())
+  dispute    Dispute  @relation(fields: [disputeId], references: [id])
+}
+
+model Review {
+  id               String      @id @default(uuid()) @map("_id")
+  reviewerId       String
+  dealerId         String?
+  technicianId     String?
+  vehicleId        String?
+  rating           Int
+  comment          String?
+  isHidden         Boolean     @default(false)
+  hiddenAt         DateTime?
+  moderationReason String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  reviewer         User        @relation("ReviewAuthor", fields: [reviewerId], references: [id])
+  dealer           Dealer?     @relation(fields: [dealerId], references: [id])
+  technician       Technician? @relation(fields: [technicianId], references: [id])
+  vehicle          Vehicle?    @relation(fields: [vehicleId], references: [id])
+}
+
+model AdvertisementCampaign {
+  id           String              @id @default(uuid()) @map("_id")
+  dealerId     String?
+  title        String
+  status       AdvertisementStatus @default(Draft)
+  budget       BigInt?
+  currency     String              @default("LYD")
+  startsAt     DateTime?
+  endsAt       DateTime?
+  cityId       String?
+  deviceTarget String?
+  createdAt    DateTime            @default(now())
+  dealer       Dealer?             @relation(fields: [dealerId], references: [id])
+  ads          Advertisement[]
+}
+
+model AdvertisementPlacement {
+  id        String          @id @default(uuid()) @map("_id")
+  code      String          @unique
+  name      String
+  basePrice BigInt?
+  isActive  Boolean         @default(true)
+  ads       Advertisement[]
+}
+
+model Advertisement {
+  id          String                 @id @default(uuid()) @map("_id")
+  campaignId  String
+  placementId String
+  type        String
+  label       String                 @default("إعلان")
+  targetUrl   String?
+  imageKey    String?
+  impressions Int                    @default(0)
+  clicks      Int                    @default(0)
+  status      AdvertisementStatus    @default(PendingReview)
+  createdAt   DateTime               @default(now())
+  campaign    AdvertisementCampaign  @relation(fields: [campaignId], references: [id])
+  placement   AdvertisementPlacement @relation(fields: [placementId], references: [id])
+}
+
+model City {
+  id          String              @id @default(uuid()) @map("_id")
+  nameAr      String
+  nameEn      String?
+  isActive    Boolean             @default(true)
+  regions     Region[]
+  dealers     Dealer[]
+  vehicles    Vehicle[]
+  technicians Technician[]
+  inspections InspectionRequest[]
+}
+
+model Region {
+  id       String    @id @default(uuid()) @map("_id")
+  cityId   String
+  nameAr   String
+  nameEn   String?
+  isActive Boolean   @default(true)
+  city     City      @relation(fields: [cityId], references: [id])
+  dealers  Dealer[]
+  vehicles Vehicle[]
+}
+
+model Setting {
+  id          String   @id @default(uuid()) @map("_id")
+  key         String   @unique
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Fee {
+  id        String   @id @default(uuid()) @map("_id")
+  code      String   @unique
+  name      String
+  amount    BigInt?
+  rate      Float?
+  currency  String   @default("LYD")
+  isActive  Boolean  @default(true)
+  rules     Json?
+  createdAt DateTime @default(now())
+}
+
+model CommissionRule {
+  id        String   @id @default(uuid()) @map("_id")
+  code      String   @unique
+  name      String
+  rate      Float?
+  amount    BigInt?
+  appliesTo String
+  rules     Json?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @map("_id")
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+}
+
+model FraudAlert {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String?
+  type      String
+  severity  String
+  status    String   @default("open")
+  evidence  Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model Banner {
+  id        String    @id @default(uuid()) @map("_id")
+  title     String
+  imageKey  String
+  targetUrl String?
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+}
+
+model Page {
+  id        String         @id @default(uuid()) @map("_id")
+  slug      String         @unique
+  locale    String         @default("ar")
+  title     String
+  body      String
+  status    ApprovalStatus @default(Draft)
+  updatedAt DateTime       @updatedAt
+}
+
+model Term {
+  id        String   @id @default(uuid()) @map("_id")
+  code      String
+  locale    String   @default("ar")
+  title     String
+  body      String
+  version   Int      @default(1)
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([code, locale, version])
+}
+
+model Policy {
+  id        String   @id @default(uuid()) @map("_id")
+  code      String
+  locale    String   @default("ar")
+  title     String
+  body      String
+  version   Int      @default(1)
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([code, locale, version])
+}
+
+model PromoCode {
+  id             String    @id @default(uuid()) @map("_id")
+  code           String    @unique
+  discountAmount BigInt?
+  discountRate   Float?
+  startsAt       DateTime?
+  endsAt         DateTime?
+  usageLimit     Int?
+  usageCount     Int       @default(0)
+  isActive       Boolean   @default(true)
+}
+
+model MemberSubscription {
+  id             String             @id @default(uuid()) @map("_id")
+  userId         String
+  planId         String
+  status         SubscriptionStatus @default(Pending)
+  startsAt       DateTime?
+  endsAt         DateTime?
+  usedAuctions   Int                @default(0)
+  version        Int                @default(0)
+  idempotencyKey String             @unique
+  snapshot       Json
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  user           User               @relation(fields: [userId], references: [id])
+  plan           DealerPlan         @relation(fields: [planId], references: [id])
+
+  @@index([userId, status, endsAt])
+}
+
+model SaleRequest {
+  id          String   @id @default(uuid()) @map("_id")
+  vehicleId   String
+  requesterId String
+  sellerId    String
+  status      String   @default("Pending")
+  message     String?
+  version     Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([vehicleId, requesterId])
+  @@index([sellerId, status])
+}
+
+model WalletWithdrawal {
+  id             String   @id @default(uuid()) @map("_id")
+  userId         String
+  amount         BigInt
+  status         String   @default("Pending")
+  reason         String
+  transferReference String?
+  adminReason    String?
+  idempotencyKey String   @unique
+  version        Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([userId, createdAt])
+}
+
+model Referral {
+  id             String   @id @default(uuid()) @map("_id")
+  referrerUserId String
+  referredUserId String?
+  code           String   @unique
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+}
