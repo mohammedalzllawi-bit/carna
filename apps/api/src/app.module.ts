@@ -20,9 +20,11 @@ import { ListingChatModule } from './modules/listing-chat/listing-chat.module';
 import { ResalaModule } from './modules/resala/resala.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
+import { SystemModule } from './modules/system/system.module';
 
 @Module({
   imports: [
+    SystemModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: resolve(__dirname, '../../../.env'),
