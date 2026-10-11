@@ -15,11 +15,11 @@ const environmentSchema = z.object({
   DEFAULT_CURRENCY: z.string().length(3).default('LYD'),
   CORS_ORIGINS: z.string().min(1),
   ADMIN_API_KEY: z.string().min(24).optional(),
-  S3_ENDPOINT: z.string().url(),
-  S3_REGION: z.string().min(1),
-  S3_BUCKET: z.string().min(1),
-  S3_ACCESS_KEY: z.string().min(1),
-  S3_SECRET_KEY: z.string().min(8),
+  S3_ENDPOINT: z.string().url().optional(),
+  S3_REGION: z.string().min(1).optional(),
+  S3_BUCKET: z.string().min(1).optional(),
+  S3_ACCESS_KEY: z.string().min(1).optional(),
+  S3_SECRET_KEY: z.string().min(8).optional(),
   BRANDING_STORAGE_DIR: z.string().min(1).optional(),
   MEDIA_STORAGE_PROVIDER: z.enum(['local', 'cloudinary']).default('local'),
   MEDIA_STORAGE_DIR: z.string().min(1).optional(),
@@ -48,6 +48,11 @@ const developmentMarkers = [
 
 export function validateEnvironment(input: Record<string, unknown>) {
   const environment = environmentSchema.parse(input);
+  const s3Keys = ['S3_ENDPOINT', 'S3_REGION', 'S3_BUCKET', 'S3_ACCESS_KEY', 'S3_SECRET_KEY'] as const;
+  if (s3Keys.some((key) => environment[key] !== undefined) &&
+      s3Keys.some((key) => environment[key] === undefined)) {
+    throw new Error('Optional S3 configuration requires all five S3_* variables, or omit them all when using Cloudinary');
+  }
   if (environment.MEDIA_STORAGE_PROVIDER === 'cloudinary' && !environment.CLOUDINARY_URL &&
       (!environment.CLOUDINARY_CLOUD_NAME || !environment.CLOUDINARY_API_KEY || !environment.CLOUDINARY_API_SECRET)) {
     throw new Error('Cloudinary storage requires CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET');
@@ -61,8 +66,8 @@ export function validateEnvironment(input: Record<string, unknown>) {
     const protectedValues = [
       environment.JWT_ACCESS_SECRET,
       environment.JWT_REFRESH_SECRET,
-      environment.S3_ACCESS_KEY,
-      environment.S3_SECRET_KEY,
+      ...(environment.S3_ACCESS_KEY ? [environment.S3_ACCESS_KEY] : []),
+      ...(environment.S3_SECRET_KEY ? [environment.S3_SECRET_KEY] : []),
       ...(environment.CLOUDINARY_API_SECRET ? [environment.CLOUDINARY_API_SECRET] : []),
       ...(environment.CLOUDINARY_URL ? [environment.CLOUDINARY_URL] : []),
       environment.PAYMENT_WEBHOOK_SECRET,
