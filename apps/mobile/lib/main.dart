@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,12 +8,56 @@ import 'features/auth/presentation/auth_gate.dart';
 import 'core/branding/platform_branding.dart';
 import 'core/notifications/push_notifications.dart';
 import 'core/branding/startup_splash.dart';
+import 'core/api/api_configuration.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final configurationError =
+      apiConfigurationError(apiBaseUrl, release: kReleaseMode);
+  if (configurationError != null) {
+    debugPrint('API configuration error: $configurationError');
+    runApp(const ApiConfigurationErrorApp());
+    return;
+  }
   await initializeDateFormatting('ar');
   await PushNotifications.instance.initialize();
   runApp(const ProviderScope(child: LibyaCarAuctionsApp()));
+}
+
+class ApiConfigurationErrorApp extends StatelessWidget {
+  const ApiConfigurationErrorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) => const MaterialApp(
+        title: 'كارنا',
+        debugShowCheckedModeBanner: false,
+        home: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.cloud_off_outlined,
+                          size: 40, color: Color(0xFF1769D2)),
+                      SizedBox(height: 16),
+                      Text('تعذر تشغيل هذه النسخة',
+                          style: TextStyle(fontSize: 20)),
+                      SizedBox(height: 8),
+                      Text(
+                          'إعداد الاتصال غير مكتمل. يرجى تثبيت النسخة المحدثة أو التواصل مع الدعم.',
+                          textAlign: TextAlign.center),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
 }
 
 class LibyaCarAuctionsApp extends ConsumerStatefulWidget {

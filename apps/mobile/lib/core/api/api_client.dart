@@ -1,10 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'api_configuration.dart';
 
-const apiBaseUrl = String.fromEnvironment(
-  'API_BASE_URL',
-  defaultValue: 'http://10.0.2.2:4100',
-);
+export 'api_configuration.dart' show apiBaseUrl;
 
 String resolveApiUrl(String value) {
   final uri = Uri.tryParse(value);

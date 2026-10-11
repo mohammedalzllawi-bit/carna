@@ -2,7 +2,28 @@
 
 مصدر تطبيق Flutter مرتبط بواجهة NestJS: التسجيل والدخول والضيف، الكتالوج والفنيون، قائمة المزادات والمزايدة، وقراءة الحساب والإشعارات. تفاصيل المزاد تستقبل أحداث Socket.IO مع تحديث دوري احتياطي، وتُحدَّث قائمة المزادات والمحفظة تلقائياً. ملفات Android موجودة؛ ملفات iOS لم تُنشأ بعد. اسم التطبيق على Android هو «Carna» ومعرّفه `ly.benghazi.auctions.libya_car_auctions`.
 
-## التشغيل
+## نسخة تعمل خارج شبكة الكمبيوتر
+
+يحتاج الهاتف إلى رابط HTTPS لخدمة NestJS API، وليس رابط Next.js Web/Admin. نشر GitHub أو تعديل `.env` لا يغير العنوان داخل APK المثبت؛ `API_BASE_URL` يحدد أثناء بناء Flutter. لم يعد التطبيق يفترض عنوان المحاكي إذا لم تقدم هذا الإعداد، ونسخ release ترفض العناوين المحلية وHTTP.
+
+في Railway أبق خدمات API وWeb وAdmin منفصلة من جذر المستودع. خدمة API تستخدم `railpack.json` و`npm run api:build` و`npm start`. خدمة Web تستخدم `deploy/railpack.web.json`، وتتصل بخدمة API عبر `API_URL` و`NEXT_PUBLIC_API_URL`. راجع [دليل النشر](../../docs/16-github-deployment.md).
+
+قبل البناء، من جذر المستودع، استبدل الرابط التالي برابط API الحقيقي:
+
+```powershell
+npm.cmd run mobile:check-api -- https://api.YOUR_DOMAIN
+```
+
+الفحص يطلب `/api/docs-json` ويتحقق من مسارات تسجيل الدخول والكتالوج دون تسجيل دخول أو كتابة بيانات. إذا رجع HTML أو 404 فلا تستخدم الرابط لبناء الهاتف. بعد نجاح الفحص، من `apps/mobile`:
+
+```powershell
+flutter build apk --debug --target-platform android-arm64 --build-number=3 --dart-define=API_BASE_URL=https://api.YOUR_DOMAIN
+adb -s DEVICE_SERIAL install -r build/app/outputs/flutter-apk/app-debug.apk
+```
+
+هذه نسخة تجريبية للأونلاين وليست موقعة للنشر في المتجر. لا تحتاج إلى `adb reverse` أو خادم اللابتوب. اختبرها على بيانات الهاتف بعد إيقاف Wi-Fi وفصل USB، وتأكد من بقاء خدمات API وقاعدة البيانات والملفات متاحة أونلاين. اختر رقم بناء أعلى من النسخة المثبتة، ولا تحذف التطبيق أو بيانات المستخدم لإعادة التثبيت.
+
+## التطوير المحلي فقط
 
 يتطلب Flutter SDK وAndroid SDK وJava المتوافق مع Gradle. تم التحقق من الكود واختبارات الواجهة باستخدام Flutter 3.44.4 وDart 3.12.2. من داخل `apps/mobile`:
 

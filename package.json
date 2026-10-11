@@ -11,6 +11,7 @@
   "scripts": {
     "start": "npm run api:start",
     "api:build": "node scripts/build-api.cjs",
+    "mobile:check-api": "node scripts/check-mobile-api.cjs",
     "admin:bootstrap": "npm run admin:bootstrap --workspace @libya-auctions/api",
     "seed:demo": "npm run seed:demo --workspace @libya-auctions/api",
     "db:upgrade": "npm run db:upgrade --workspace @libya-auctions/api",
