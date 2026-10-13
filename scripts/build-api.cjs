@@ -10,6 +10,7 @@ function buildApi(run = spawnSync) {
     ['--env-file-if-exists=../../.env', requireApi.resolve('prisma/build/index.js'), 'generate'],
     [requireApi.resolve('@nestjs/cli/bin/nest.js'), 'build'],
     [resolve(cwd, 'scripts/verify-runtime.cjs')],
+    [resolve(cwd, 'scripts/prisma-artifact.cjs'), 'pack'],
   ];
   for (const args of steps) {
     const result = run(process.execPath, args, { cwd, env: process.env, stdio: 'inherit' });

@@ -7,7 +7,7 @@ const requiredEnums = ['ApprovalStatus', 'VehicleCategory', 'VehicleCondition', 
 function verifyRuntime(load = requireApi) {
   const client = load('@prisma/client');
   const datamodel = client.Prisma?.dmmf?.datamodel;
-  const repair = 'Run npm run api:build and keep the build-stage node_modules in the runtime image.';
+  const repair = 'Run npm run api:build, preserve apps/api/dist, and use npm start to restore the bundled client before verification.';
   if (typeof client.PrismaClient !== 'function' || !datamodel?.models?.length || !datamodel.enums?.length) {
     throw new Error(`Prisma Client is not generated for the application schema. ${repair}`);
   }

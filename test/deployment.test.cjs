@@ -41,18 +41,20 @@ test('the API runtime does not publish install files over generated build depend
   assert.deepEqual(config.steps.install.deployOutputs, []);
   assert.equal(config.deploy.inputs, undefined);
   const api = readJson('apps/api/package.json');
-  assert.equal(api.scripts.prestart, 'npm run verify:runtime');
+  assert.equal(api.scripts.build, 'node ../../scripts/build-api.cjs');
+  assert.equal(api.scripts.prestart, 'node scripts/prisma-artifact.cjs prepare');
   assert.equal(api.scripts['verify:runtime'], 'node scripts/verify-runtime.cjs');
 });
 
-test('API builds generate Prisma, compile Nest and verify runtime without a shell', () => {
+test('API builds generate Prisma, compile Nest, verify and package runtime without a shell', () => {
   const calls = [];
   assert.equal(buildApi((...args) => { calls.push(args); return { status: 0 }; }), 0);
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 4);
   assert.equal(calls[0][0], process.execPath);
   assert.equal(calls[0][1].at(-1), 'generate');
   assert.equal(calls[1][1].at(-1), 'build');
   assert.equal(calls[2][1][0], resolve(__dirname, '../apps/api/scripts/verify-runtime.cjs'));
+  assert.deepEqual(calls[3][1], [resolve(__dirname, '../apps/api/scripts/prisma-artifact.cjs'), 'pack']);
   for (const [, , options] of calls) {
     assert.equal(options.cwd, resolve(__dirname, '../apps/api'));
     assert.equal(options.env, process.env);
@@ -64,6 +66,12 @@ test('a runtime verification failure cannot report a successful API build', () =
   let calls = 0;
   assert.equal(buildApi(() => ({ status: ++calls === 3 ? 1 : 0 })), 1);
   assert.equal(calls, 3);
+});
+
+test('a Prisma packaging failure cannot report a successful API build', () => {
+  let calls = 0;
+  assert.equal(buildApi(() => ({ status: ++calls === 4 ? 1 : 0 })), 1);
+  assert.equal(calls, 4);
 });
 
 test('a failed Prisma generation prevents compilation and preserves the exit code', () => {
